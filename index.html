@@ -2,1560 +2,1557 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
-<title>Solution App — Complete</title>
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,400&display=swap" rel="stylesheet"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Solution — Your City, Your Help</title>
+<link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Satoshi:wght@300;400;500;700&display=swap" rel="stylesheet"/>
 <style>
-/* ═══════════════════════════════════════
-   DESIGN TOKENS
-═══════════════════════════════════════ */
-:root {
-  --p: #4f35e0;
-  --p-dark: #3322b8;
-  --p-mid: #7b65f0;
-  --p-light: #eeebff;
-  --p-xlight: #f7f5ff;
-  --teal: #0b9b73;
-  --teal-light: #dff5ed;
-  --coral: #e63b1f;
-  --coral-light: #fcecea;
-  --amber: #d08010;
-  --amber-light: #fdf3e0;
-  --blue: #1868c4;
-  --blue-light: #e3effc;
-  --ink: #0d0b1f;
-  --ink2: #3a3555;
-  --ink3: #7a768f;
-  --bg: #f4f2ff;
-  --bg2: #eceaff;
-  --white: #ffffff;
-  --border: rgba(79,53,224,0.12);
-  --r: 16px;
-  --r-sm: 10px;
-  --r-pill: 999px;
-  --shadow: 0 4px 24px rgba(79,53,224,0.10);
-  --shadow-lg: 0 12px 48px rgba(79,53,224,0.16);
+/* ── TOKENS ─────────────────────────────── */
+:root{
+  --ink:#0a0812;--ink2:#2d2640;--ink3:#7c748f;
+  --cream:#faf8f5;--surface:#f2efe9;--glass:rgba(255,255,255,0.7);
+  --p:#5c3bff;--p2:#7b5fff;--p3:#a78bff;--p-glow:rgba(92,59,255,0.18);
+  --teal:#00c98a;--teal2:#00a370;--teal-bg:rgba(0,201,138,0.10);
+  --coral:#ff4d2e;--coral-bg:rgba(255,77,46,0.10);
+  --amber:#f5a623;--amber-bg:rgba(245,166,35,0.10);
+  --blue:#2563eb;--blue-bg:rgba(37,99,235,0.10);
+  --r:20px;--r-sm:12px;--r-pill:999px;
+  --ease:cubic-bezier(.4,0,.2,1);
+  --spring:cubic-bezier(.34,1.56,.64,1);
 }
 
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;-webkit-tap-highlight-color:transparent}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--ink);font-size:15px;line-height:1.6;min-height:100vh;overflow-x:hidden}
-h1,h2,h3,h4,h5{font-family:'Syne',sans-serif;line-height:1.15}
-button{font-family:'DM Sans',sans-serif;cursor:pointer}
-input,select,textarea{font-family:'DM Sans',sans-serif}
+/* ── RESET ───────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Satoshi',sans-serif;
+  background:var(--cream);color:var(--ink);
+  font-size:15px;line-height:1.6;
+  min-height:100vh;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{font-family:'Clash Display',sans-serif;line-height:1.1}
+button{font-family:'Satoshi',sans-serif;cursor:pointer;border:none;background:none}
+input,select,textarea{font-family:'Satoshi',sans-serif;font-size:15px}
 
-/* ═══ LAYOUT ═══ */
-.screen{display:none;min-height:100vh;animation:fadeIn 0.25s ease}
-.screen.active{display:block}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-
-/* Mobile frame wrapper */
-.app-shell{
-  max-width:420px;margin:0 auto;
-  min-height:100vh;
-  background:var(--white);
-  position:relative;
-  box-shadow:0 0 80px rgba(79,53,224,0.15);
+/* ── APP SHELL ───────────────────────────── */
+.shell{
+  max-width:430px;margin:0 auto;
+  min-height:100vh;background:var(--cream);
+  position:relative;overflow:hidden;
+  box-shadow:0 0 120px rgba(92,59,255,0.12);
 }
 
-/* ═══ TOP NAV ═══ */
-.top-nav{
+/* ── SCREENS ─────────────────────────────── */
+.screen{
+  display:none;min-height:100vh;
+  opacity:0;transform:translateY(16px);
+  transition:opacity .35s var(--ease),transform .35s var(--ease);
+}
+.screen.active{
+  display:block;opacity:1;transform:translateY(0);
+}
+.screen.slide-in{animation:slideIn .35s var(--ease) both}
+.screen.slide-back{animation:slideBack .3s var(--ease) both}
+@keyframes slideIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideBack{from{opacity:0;transform:translateX(-40px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── GRAIN OVERLAY ───────────────────────── */
+.shell::before{
+  content:'';position:fixed;inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;z-index:999;opacity:.4;
+}
+
+/* ── NAV BAR ─────────────────────────────── */
+.nav{
   position:sticky;top:0;z-index:50;
-  background:rgba(255,255,255,0.95);
-  backdrop-filter:blur(12px);
   padding:14px 20px;
   display:flex;align-items:center;justify-content:space-between;
-  border-bottom:1px solid var(--border);
+  background:rgba(250,248,245,0.85);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-bottom:1px solid rgba(0,0,0,0.06);
 }
+.nav-logo{
+  font-family:'Clash Display',sans-serif;
+  font-weight:700;font-size:18px;color:var(--p);
+  display:flex;align-items:center;gap:8px;
+}
+.nav-logo-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 0 3px rgba(0,201,138,0.2);
+  animation:dotPulse 2.5s ease-in-out infinite;
+}
+@keyframes dotPulse{0%,100%{box-shadow:0 0 0 3px rgba(0,201,138,0.2)}50%{box-shadow:0 0 0 7px rgba(0,201,138,0)}}
 .nav-back{
-  background:var(--p-xlight);border:none;
-  width:36px;height:36px;border-radius:10px;
+  width:38px;height:38px;border-radius:12px;
+  background:var(--surface);
   display:flex;align-items:center;justify-content:center;
-  color:var(--p);font-size:18px;
+  color:var(--ink);font-size:20px;font-weight:300;
+  transition:background .15s,transform .15s;
 }
-.nav-title{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
-.nav-action{background:none;border:none;color:var(--p);font-size:13px;font-weight:600}
+.nav-back:active{transform:scale(.92)}
+.nav-title{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:600;color:var(--ink)}
+.nav-avatar{
+  width:38px;height:38px;border-radius:12px;
+  background:var(--p);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Clash Display',sans-serif;font-size:14px;font-weight:700;
+}
 
-/* ═══ BOTTOM TAB BAR ═══ */
+/* ── BOTTOM TAB BAR ──────────────────────── */
 .tab-bar{
-  position:fixed;bottom:0;left:50%;
-  transform:translateX(-50%);
-  width:100%;max-width:420px;
-  background:rgba(255,255,255,0.97);
-  backdrop-filter:blur(16px);
-  border-top:1px solid var(--border);
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:430px;
+  background:rgba(250,248,245,0.92);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  border-top:1px solid rgba(0,0,0,0.06);
   display:flex;z-index:100;
-  padding-bottom:env(safe-area-inset-bottom,8px);
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));
 }
-.tab-item{
+.tab-btn{
   flex:1;display:flex;flex-direction:column;
-  align-items:center;gap:3px;padding:10px 4px 8px;
-  background:none;border:none;
+  align-items:center;gap:3px;
+  padding:8px 4px 6px;
   color:var(--ink3);font-size:10px;font-weight:500;
-  transition:color 0.15s;
+  transition:color .2s;
 }
-.tab-item.active{color:var(--p)}
-.tab-icon{font-size:22px;line-height:1}
-.tab-item.active .tab-icon{
-  background:var(--p-light);
-  border-radius:10px;padding:4px 10px;
+.tab-btn.active{color:var(--p)}
+.tab-icon-wrap{
+  width:44px;height:30px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;transition:background .2s,transform .2s var(--spring);
+}
+.tab-btn.active .tab-icon-wrap{
+  background:rgba(92,59,255,0.10);
+  transform:scale(1.05);
 }
 
-/* ═══ BUTTONS ═══ */
-.btn-primary{
-  background:var(--p);color:white;border:none;
-  width:100%;padding:15px;border-radius:var(--r-sm);
-  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+/* ── BUTTONS ─────────────────────────────── */
+.btn{
   display:flex;align-items:center;justify-content:center;gap:8px;
-  transition:background 0.15s,transform 0.1s;
+  width:100%;padding:15px 20px;
+  border-radius:var(--r-sm);
+  font-family:'Clash Display',sans-serif;
+  font-size:15px;font-weight:600;
+  transition:transform .15s var(--spring),box-shadow .15s,opacity .15s;
 }
-.btn-primary:active{background:var(--p-dark);transform:scale(0.98)}
+.btn:active{transform:scale(.97);opacity:.9}
+.btn-primary{
+  background:var(--p);color:#fff;
+  box-shadow:0 4px 20px rgba(92,59,255,0.30);
+}
+.btn-primary:active{box-shadow:0 2px 8px rgba(92,59,255,0.20)}
 .btn-outline{
-  background:none;border:1.5px solid var(--p);color:var(--p);
-  width:100%;padding:14px;border-radius:var(--r-sm);
-  font-family:'Syne',sans-serif;font-size:15px;font-weight:600;
+  background:transparent;color:var(--p);
+  border:1.5px solid rgba(92,59,255,0.3);
 }
+.btn-teal{background:var(--teal);color:#fff;box-shadow:0 4px 16px rgba(0,201,138,0.25)}
 .btn-sm{
-  background:var(--p);color:white;border:none;
-  padding:9px 18px;border-radius:var(--r-sm);
-  font-size:13px;font-weight:600;
-  display:inline-flex;align-items:center;gap:6px;
+  display:inline-flex;align-items:center;gap:5px;
+  padding:9px 16px;border-radius:10px;
+  font-family:'Clash Display',sans-serif;font-size:13px;font-weight:600;
+  transition:transform .15s var(--spring),opacity .15s;
 }
-.btn-teal{background:var(--teal);color:white;border:none;
-  padding:9px 18px;border-radius:var(--r-sm);font-size:13px;font-weight:600}
+.btn-sm:active{transform:scale(.95)}
 
-/* ═══ CARDS ═══ */
+/* ── PILL BADGES ─────────────────────────── */
+.pill{
+  display:inline-flex;align-items:center;gap:4px;
+  font-size:11px;font-weight:600;padding:4px 10px;
+  border-radius:var(--r-pill);letter-spacing:.01em;
+}
+.pill-green{background:var(--teal-bg);color:var(--teal2)}
+.pill-red{background:var(--coral-bg);color:var(--coral)}
+.pill-amber{background:var(--amber-bg);color:var(--amber)}
+.pill-purple{background:rgba(92,59,255,0.10);color:var(--p)}
+.pill-blue{background:var(--blue-bg);color:var(--blue)}
+
+/* ── CARDS ───────────────────────────────── */
 .card{
-  background:var(--white);border:1px solid var(--border);
+  background:#fff;
+  border:1px solid rgba(0,0,0,0.06);
   border-radius:var(--r);padding:18px;
   margin-bottom:12px;
+  transition:transform .2s var(--spring),box-shadow .2s;
 }
-.pill{
-  display:inline-flex;align-items:center;gap:5px;
-  font-size:11px;font-weight:600;padding:4px 10px;
-  border-radius:var(--r-pill);
-}
-.pill-teal{background:var(--teal-light);color:var(--teal)}
-.pill-amber{background:var(--amber-light);color:var(--amber)}
-.pill-coral{background:var(--coral-light);color:var(--coral)}
-.pill-purple{background:var(--p-light);color:var(--p)}
-.pill-blue{background:var(--blue-light);color:var(--blue)}
+.card:active{transform:scale(.99)}
 
-/* ═══ FORM ═══ */
-.form-group{margin-bottom:16px}
-.form-group label{display:block;font-size:12px;font-weight:600;color:var(--ink2);margin-bottom:6px;letter-spacing:0.02em;text-transform:uppercase}
-.form-group input,.form-group select,.form-group textarea{
-  width:100%;padding:13px 15px;
-  border:1.5px solid rgba(0,0,0,0.1);border-radius:var(--r-sm);
-  font-size:15px;color:var(--ink);background:var(--white);outline:none;
-  transition:border-color 0.2s,box-shadow 0.2s;
+/* ── FORM ────────────────────────────────── */
+.fg{margin-bottom:16px}
+.fg label{
+  display:block;font-size:11px;font-weight:700;
+  color:var(--ink3);letter-spacing:.06em;text-transform:uppercase;
+  margin-bottom:7px;
 }
-.form-group input:focus,.form-group select:focus,.form-group textarea:focus{
-  border-color:var(--p);box-shadow:0 0 0 3px rgba(79,53,224,0.1);
+.fg input,.fg select,.fg textarea{
+  width:100%;padding:13px 16px;
+  border:1.5px solid rgba(0,0,0,0.10);
+  border-radius:var(--r-sm);background:#fff;
+  color:var(--ink);outline:none;
+  transition:border-color .2s,box-shadow .2s;
 }
-.form-group textarea{resize:vertical;min-height:80px}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  border-color:var(--p);
+  box-shadow:0 0 0 4px rgba(92,59,255,0.10);
+}
+.fg textarea{resize:vertical;min-height:80px;line-height:1.5}
 
-/* ═══ RATING STARS ═══ */
-.stars{color:#f5a623;font-size:14px;letter-spacing:1px}
-
-/* ════════════════════════════════════════
-   SCREEN 1 — HOME (Customer)
-════════════════════════════════════════ */
-#s-home .hero-header{
-  background:var(--p);padding:32px 20px 80px;
+/* ══════════════════════════════════════════
+   SCREEN: LANDING
+══════════════════════════════════════════ */
+#s-landing{
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  min-height:100vh;padding:40px 24px 60px;
+  background:var(--cream);
   position:relative;overflow:hidden;
 }
-#s-home .hero-header::before{
-  content:'';position:absolute;
-  width:280px;height:280px;border-radius:50%;
-  background:rgba(255,255,255,0.06);
-  top:-80px;right:-60px;
+.land-glow{
+  position:absolute;border-radius:50%;pointer-events:none;
+  animation:glowDrift 8s ease-in-out infinite alternate;
 }
-#s-home .hero-header::after{
-  content:'';position:absolute;
-  width:160px;height:160px;border-radius:50%;
-  background:rgba(255,255,255,0.04);
-  bottom:-40px;left:-30px;
+.land-glow1{width:300px;height:300px;top:-80px;right:-80px;background:radial-gradient(circle,rgba(92,59,255,0.12) 0%,transparent 70%)}
+.land-glow2{width:250px;height:250px;bottom:-60px;left:-60px;background:radial-gradient(circle,rgba(0,201,138,0.10) 0%,transparent 70%);animation-delay:-4s}
+@keyframes glowDrift{from{transform:scale(1)}to{transform:scale(1.15)}}
+.land-badge{
+  display:inline-flex;align-items:center;gap:7px;
+  background:#fff;border:1px solid rgba(0,0,0,0.08);
+  color:var(--ink3);font-size:12px;font-weight:500;
+  padding:6px 14px;border-radius:var(--r-pill);
+  margin-bottom:24px;
+  animation:fadeUp .6s var(--ease) both;
 }
-.hero-greeting{font-size:13px;color:rgba(255,255,255,0.7);margin-bottom:4px}
-.hero-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:20px}
-.search-float{
-  background:white;border-radius:var(--r);
-  padding:14px 16px;
-  display:flex;align-items:center;gap:10px;
-  box-shadow:var(--shadow-lg);
-  position:relative;z-index:5;
+.land-title{
+  font-family:'Clash Display',sans-serif;
+  font-size:clamp(2.4rem,9vw,3.2rem);
+  font-weight:700;color:var(--ink);
+  text-align:center;line-height:1.05;
+  margin-bottom:10px;
+  animation:fadeUp .6s .08s var(--ease) both;
 }
-.search-float input{flex:1;border:none;outline:none;font-size:15px;color:var(--ink)}
-.search-float input::placeholder{color:var(--ink3)}
-.search-go{
-  background:var(--p);border:none;
-  width:38px;height:38px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;
-  color:white;font-size:18px;flex-shrink:0;
+.land-title span{
+  background:linear-gradient(135deg,var(--p),var(--p3));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
 }
-
-.home-body{padding:0 20px 100px;margin-top:-52px;position:relative;z-index:4}
-.section-label{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--ink);margin:22px 0 12px;display:flex;justify-content:space-between;align-items:center}
-.see-all{font-size:12px;font-weight:500;color:var(--p);background:none;border:none}
-
-/* Quick service chips */
-.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.quick-item{
-  background:var(--white);border:1px solid var(--border);
-  border-radius:var(--r-sm);padding:12px 6px;
-  text-align:center;cursor:pointer;
-  transition:transform 0.15s,border-color 0.15s;
+.land-sub{
+  font-size:15px;color:var(--ink3);text-align:center;
+  max-width:320px;margin:0 auto 48px;line-height:1.6;
+  animation:fadeUp .6s .15s var(--ease) both;
 }
-.quick-item:active{transform:scale(0.95)}
-.quick-item:hover{border-color:var(--p)}
-.quick-emoji{font-size:24px;display:block;margin-bottom:5px}
-.quick-label{font-size:10px;font-weight:600;color:var(--ink2)}
-
-/* Active order card */
-.order-card{
-  background:linear-gradient(135deg,var(--p) 0%,var(--p-dark) 100%);
-  border-radius:var(--r);padding:18px;margin-bottom:12px;
+.role-grid{width:100%;display:flex;flex-direction:column;gap:10px;animation:fadeUp .6s .2s var(--ease) both}
+.role-card{
+  width:100%;background:#fff;
+  border:1.5px solid rgba(0,0,0,0.07);
+  border-radius:var(--r);padding:18px 20px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;
+  transition:border-color .2s,transform .2s var(--spring),box-shadow .2s;
+  text-align:left;
 }
-.order-card-title{font-size:11px;color:rgba(255,255,255,0.7);font-weight:600;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px}
-.order-card-name{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:white;margin-bottom:3px}
-.order-card-sub{font-size:13px;color:rgba(255,255,255,0.65)}
-.order-eta{
-  background:rgba(255,255,255,0.15);
-  border-radius:var(--r-sm);padding:8px 12px;
-  margin-top:12px;display:flex;align-items:center;justify-content:space-between;
-}
-.order-eta span{color:white;font-size:13px;font-weight:500}
-.order-eta strong{color:white;font-family:'Syne',sans-serif;font-size:16px;font-weight:800}
-
-/* Provider card in home */
-.provider-mini{
-  display:flex;align-items:center;gap:12px;
-  background:var(--white);border:1px solid var(--border);
-  border-radius:var(--r);padding:14px;margin-bottom:10px;
-  cursor:pointer;transition:box-shadow 0.15s;
-}
-.provider-mini:active{box-shadow:var(--shadow)}
-.prov-avatar{
+.role-card:hover{border-color:var(--p);box-shadow:0 4px 20px rgba(92,59,255,0.10)}
+.role-card:active{transform:scale(.98)}
+.role-icon{
   width:48px;height:48px;border-radius:14px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:16px;
+  font-size:22px;flex-shrink:0;
+}
+.role-text{flex:1}
+.role-title{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.role-sub{font-size:12px;color:var(--ink3)}
+.role-arrow{font-size:20px;color:var(--ink3)}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══════════════════════════════════════════
+   SCREEN: HOME (CUSTOMER)
+══════════════════════════════════════════ */
+.home-hero{
+  background:var(--p);
+  padding:20px 20px 72px;
+  position:relative;overflow:hidden;
+}
+.home-hero::before{
+  content:'';position:absolute;
+  width:320px;height:320px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+  top:-100px;right:-80px;pointer-events:none;
+}
+.home-hero::after{
+  content:'';position:absolute;
+  width:180px;height:180px;border-radius:50%;
+  background:rgba(255,255,255,0.04);
+  bottom:-60px;left:-40px;pointer-events:none;
+}
+.hero-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:22px;position:relative;z-index:2}
+.hero-greet{font-size:12px;color:rgba(255,255,255,0.6);margin-bottom:2px}
+.hero-name{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:#fff}
+.hero-avatar-btn{
+  width:42px;height:42px;border-radius:13px;
+  background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:20px;cursor:pointer;
+}
+.search-float{
+  background:#fff;border-radius:16px;
+  padding:5px 5px 5px 16px;
+  display:flex;align-items:center;gap:8px;
+  box-shadow:0 8px 32px rgba(0,0,0,0.18);
+  position:relative;z-index:2;cursor:pointer;
+}
+.search-float input{
+  flex:1;border:none;outline:none;font-size:14px;
+  color:var(--ink);background:transparent;cursor:pointer;
+}
+.search-float input::placeholder{color:var(--ink3)}
+.search-go-btn{
+  width:42px;height:42px;border-radius:12px;
+  background:var(--p);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:20px;flex-shrink:0;
+  transition:transform .15s var(--spring);
+}
+.search-go-btn:active{transform:scale(.92)}
+
+.home-body{padding:0 16px 100px;margin-top:-48px;position:relative;z-index:3}
+
+/* Active order card */
+.active-order{
+  background:#fff;border-radius:var(--r);
+  padding:16px;margin-bottom:14px;
+  box-shadow:0 4px 20px rgba(0,0,0,0.08);
+  overflow:hidden;position:relative;
+}
+.active-order::before{
+  content:'';position:absolute;top:0;left:0;right:0;
+  height:3px;background:linear-gradient(90deg,var(--p),var(--teal));
+}
+.ao-label{font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.07em;text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:5px}
+.ao-pulse{width:6px;height:6px;border-radius:50%;background:var(--teal);animation:dotPulse 1.5s ease-in-out infinite}
+.ao-name{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.ao-sub{font-size:12px;color:var(--ink3)}
+.ao-bottom{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;padding-top:12px;
+  border-top:1px solid rgba(0,0,0,0.05);
+}
+.ao-eta{font-size:13px;color:var(--ink3)}
+.ao-eta strong{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:700;color:var(--ink)}
+.ao-track-btn{
+  background:var(--p);color:#fff;
+  padding:8px 16px;border-radius:10px;
+  font-family:'Clash Display',sans-serif;
+  font-size:13px;font-weight:600;
+  transition:transform .15s var(--spring);
+}
+.ao-track-btn:active{transform:scale(.95)}
+
+/* Section label */
+.sec-label{
+  font-family:'Clash Display',sans-serif;
+  font-size:16px;font-weight:700;color:var(--ink);
+  margin:18px 0 12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.see-all{font-size:12px;font-weight:600;color:var(--p);background:none;border:none;padding:4px 0}
+
+/* Quick grid */
+.quick-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.quick-item{
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
+  border-radius:14px;padding:12px 6px 10px;
+  text-align:center;cursor:pointer;
+  transition:transform .2s var(--spring),border-color .15s,box-shadow .2s;
+}
+.quick-item:hover{border-color:var(--p);box-shadow:0 4px 12px rgba(92,59,255,0.12)}
+.quick-item:active{transform:scale(.92)}
+.qi-emoji{font-size:22px;display:block;margin-bottom:5px;
+  transition:transform .2s var(--spring)}
+.quick-item:hover .qi-emoji{transform:scale(1.2)}
+.qi-label{font-size:10px;font-weight:600;color:var(--ink2);line-height:1.2}
+
+/* Provider mini card */
+.prov-mini{
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
+  border-radius:var(--r);padding:14px;
+  margin-bottom:10px;cursor:pointer;
+  display:flex;align-items:center;gap:12px;
+  transition:transform .2s var(--spring),box-shadow .2s,border-color .15s;
+}
+.prov-mini:hover{border-color:rgba(92,59,255,0.2);box-shadow:0 4px 16px rgba(92,59,255,0.08)}
+.prov-mini:active{transform:scale(.98)}
+.pav{
+  width:50px;height:50px;border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;
   flex-shrink:0;
 }
 .prov-info{flex:1}
-.prov-name{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--ink)}
-.prov-meta{font-size:12px;color:var(--ink3);display:flex;align-items:center;gap:8px}
-.prov-eta{font-size:12px;font-weight:600;color:var(--teal)}
+.prov-name{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:700;color:var(--ink)}
+.prov-meta{font-size:12px;color:var(--ink3);margin-top:2px;display:flex;align-items:center;gap:6px}
+.stars{color:#f5a623;font-size:12px;letter-spacing:1px}
+.prov-eta-badge{
+  font-size:11px;font-weight:700;color:var(--teal2);
+  background:var(--teal-bg);padding:4px 10px;border-radius:var(--r-pill);
+}
 
-/* ════════════════════════════════════════
-   SCREEN 2 — SEARCH RESULTS
-════════════════════════════════════════ */
-#s-search .search-bar-top{
-  padding:12px 20px;background:var(--white);
-  border-bottom:1px solid var(--border);
+/* ══════════════════════════════════════════
+   SCREEN: SEARCH
+══════════════════════════════════════════ */
+.search-top{
+  padding:12px 16px;background:#fff;
+  border-bottom:1px solid rgba(0,0,0,0.06);
+  position:sticky;top:0;z-index:10;
+}
+.search-input-wrap{
   display:flex;align-items:center;gap:10px;
+  background:var(--surface);border-radius:14px;
+  padding:11px 14px;
 }
-#s-search .search-bar-top input{
-  flex:1;border:1.5px solid var(--border);border-radius:var(--r-sm);
-  padding:10px 14px;font-size:14px;outline:none;color:var(--ink);
+.search-input-wrap input{
+  flex:1;border:none;outline:none;background:transparent;
+  font-size:15px;color:var(--ink);
 }
-#s-search .search-bar-top input:focus{border-color:var(--p)}
+.search-input-wrap input::placeholder{color:var(--ink3)}
 
-.filter-row{
-  padding:10px 20px;display:flex;gap:8px;overflow-x:auto;
-  background:var(--white);border-bottom:1px solid var(--border);
+.filter-scroll{
+  display:flex;gap:7px;
+  padding:10px 16px;overflow-x:auto;
+  background:#fff;border-bottom:1px solid rgba(0,0,0,0.06);
 }
-.filter-row::-webkit-scrollbar{display:none}
-.filter-chip{
-  flex-shrink:0;padding:6px 14px;border-radius:var(--r-pill);
-  border:1.5px solid var(--border);background:white;
-  font-size:12px;font-weight:600;color:var(--ink3);
+.filter-scroll::-webkit-scrollbar{display:none}
+.fchip{
+  flex-shrink:0;padding:7px 14px;
+  border-radius:var(--r-pill);border:1.5px solid rgba(0,0,0,0.08);
+  background:#fff;font-size:12px;font-weight:600;color:var(--ink3);
+  transition:all .15s;
 }
-.filter-chip.on{background:var(--p);color:white;border-color:var(--p)}
+.fchip.on{background:var(--p);color:#fff;border-color:var(--p)}
 
-.results-list{padding:16px 20px 100px}
+.results-wrap{padding:14px 16px 100px}
 .result-card{
-  background:var(--white);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px;margin-bottom:12px;
-  cursor:pointer;transition:box-shadow 0.15s,transform 0.15s;
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
+  border-radius:var(--r);padding:16px;margin-bottom:10px;
+  cursor:pointer;
+  transition:transform .2s var(--spring),box-shadow .2s,border-color .15s;
 }
-.result-card:active{transform:scale(0.99);box-shadow:var(--shadow)}
-.rc-top{display:flex;align-items:flex-start;gap:12px}
-.rc-avatar{
-  width:54px;height:54px;border-radius:14px;
+.result-card:hover{border-color:rgba(92,59,255,0.2);box-shadow:0 6px 20px rgba(92,59,255,0.08)}
+.result-card:active{transform:scale(.99)}
+.rc-row{display:flex;align-items:flex-start;gap:12px}
+.rc-av{
+  width:56px;height:56px;border-radius:16px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:18px;flex-shrink:0;
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:18px;
+  flex-shrink:0;
 }
-.rc-info{flex:1}
-.rc-name{font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
-.rc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
-.rc-bot{display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-.rc-price{font-size:12px;color:var(--ink3)}
-.rc-price strong{font-family:'Syne',sans-serif;font-size:15px;color:var(--ink);font-weight:700}
+.rc-name{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:700;color:var(--ink)}
+.rc-loc{font-size:12px;color:var(--ink3);margin-top:2px}
+.rc-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.rc-bot{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-top:12px;padding-top:12px;
+  border-top:1px solid rgba(0,0,0,0.05);
+}
+.rc-price small{font-size:11px;color:var(--ink3)}
+.rc-price strong{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:700;color:var(--ink)}
 
-/* ════════════════════════════════════════
-   SCREEN 3 — PROVIDER DETAIL
-════════════════════════════════════════ */
-#s-detail .detail-hero{
-  background:var(--p);padding:80px 20px 28px;
-  text-align:center;
+/* ══════════════════════════════════════════
+   SCREEN: DETAIL
+══════════════════════════════════════════ */
+.detail-hero{
+  padding:70px 20px 28px;
+  text-align:center;position:relative;
+  overflow:hidden;
 }
-.detail-avatar{
-  width:72px;height:72px;border-radius:20px;
+.detail-hero::after{
+  content:'';position:absolute;
+  bottom:0;left:0;right:0;height:60px;
+  background:linear-gradient(to top,var(--cream),transparent);
+}
+.det-avatar{
+  width:80px;height:80px;border-radius:22px;
+  margin:0 auto 14px;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:26px;
-  margin:0 auto 12px;background:rgba(255,255,255,0.15);color:white;
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:28px;
+  color:#fff;position:relative;z-index:2;
 }
-.detail-name{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:white;margin-bottom:4px}
-.detail-sub{font-size:13px;color:rgba(255,255,255,0.7)}
-.detail-stats{
-  display:flex;margin-top:16px;
-  background:rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;
+.det-name{font-family:'Clash Display',sans-serif;font-size:24px;font-weight:700;color:#fff;margin-bottom:4px;position:relative;z-index:2}
+.det-sub{font-size:13px;color:rgba(255,255,255,0.65);position:relative;z-index:2}
+.det-stats{
+  display:flex;margin-top:18px;
+  background:rgba(255,255,255,0.12);
+  border-radius:14px;overflow:hidden;position:relative;z-index:2;
 }
-.detail-stat{flex:1;padding:12px;text-align:center;border-right:1px solid rgba(255,255,255,0.1)}
-.detail-stat:last-child{border-right:none}
-.detail-stat-num{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white}
-.detail-stat-lbl{font-size:10px;color:rgba(255,255,255,0.6);margin-top:1px}
+.det-stat{flex:1;padding:12px;text-align:center;border-right:1px solid rgba(255,255,255,0.1)}
+.det-stat:last-child{border-right:none}
+.det-stat-n{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:#fff}
+.det-stat-l{font-size:10px;color:rgba(255,255,255,0.55);margin-top:1px}
 
-.detail-body{padding:20px 20px 120px}
-.detail-section-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--ink);margin:20px 0 10px}
-.service-tag{
+.det-body{padding:20px 16px 130px}
+.det-sec-title{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin:18px 0 10px}
+.svc-tag{
   display:inline-flex;align-items:center;gap:5px;
-  background:var(--p-light);color:var(--p);
+  background:rgba(92,59,255,0.08);color:var(--p);
   font-size:12px;font-weight:600;padding:6px 12px;
   border-radius:var(--r-pill);margin:3px;
 }
-.review-item{background:var(--p-xlight);border-radius:var(--r-sm);padding:12px;margin-bottom:8px}
-.review-author{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
-.review-text{font-size:13px;color:var(--ink2);line-height:1.5}
+.rev-card{
+  background:var(--surface);border-radius:14px;
+  padding:13px 14px;margin-bottom:8px;
+}
+.rev-author{font-size:12px;font-weight:700;color:var(--ink);margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.rev-text{font-size:13px;color:var(--ink2);line-height:1.5}
 
 .book-strip{
   position:fixed;bottom:0;left:50%;transform:translateX(-50%);
-  width:100%;max-width:420px;
-  background:white;border-top:1px solid var(--border);
-  padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px));
-  display:flex;align-items:center;gap:12px;
-  z-index:60;
+  width:100%;max-width:430px;
+  background:rgba(250,248,245,0.95);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(0,0,0,0.06);
+  padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;gap:14px;z-index:60;
 }
-.book-price{flex:1}
+.book-price-info{flex:1}
 .book-price-lbl{font-size:11px;color:var(--ink3)}
-.book-price-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--ink)}
-.book-btn{
-  background:var(--p);color:white;border:none;
-  padding:13px 28px;border-radius:var(--r-sm);
-  font-family:'Syne',sans-serif;font-size:15px;font-weight:700;
+.book-price-val{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:var(--ink)}
+.book-now-btn{
+  background:var(--p);color:#fff;
+  padding:14px 26px;border-radius:var(--r-sm);
+  font-family:'Clash Display',sans-serif;font-size:15px;font-weight:700;
+  box-shadow:0 4px 16px rgba(92,59,255,0.30);
+  transition:transform .15s var(--spring),box-shadow .15s;
 }
+.book-now-btn:active{transform:scale(.96);box-shadow:0 2px 8px rgba(92,59,255,0.15)}
 
-/* ════════════════════════════════════════
-   SCREEN 4 — BOOKING FLOW
-════════════════════════════════════════ */
-#s-book .book-body{padding:20px 20px 110px}
-.time-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
-.time-slot{
-  border:1.5px solid var(--border);border-radius:var(--r-sm);
-  padding:10px 6px;text-align:center;cursor:pointer;
-  transition:all 0.15s;
+/* ══════════════════════════════════════════
+   SCREEN: BOOKING
+══════════════════════════════════════════ */
+.book-body{padding:16px 16px 110px}
+.time-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}
+.tslot{
+  border:1.5px solid rgba(0,0,0,0.08);
+  border-radius:12px;padding:11px 6px;
+  text-align:center;cursor:pointer;
+  transition:all .15s var(--spring);
 }
-.time-slot.selected{background:var(--p);border-color:var(--p)}
-.time-slot.selected .ts-time{color:white}
-.time-slot.selected .ts-label{color:rgba(255,255,255,0.7)}
-.ts-time{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--ink)}
-.ts-label{font-size:10px;color:var(--ink3)}
-.order-summary{background:var(--p-xlight);border-radius:var(--r);padding:16px;margin-top:8px}
-.os-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;font-size:14px}
-.os-row.total{border-top:1px solid var(--border);margin-top:6px;padding-top:12px}
-.os-row.total span{font-family:'Syne',sans-serif;font-weight:800;font-size:16px}
+.tslot:active{transform:scale(.95)}
+.tslot.sel{background:var(--p);border-color:var(--p)}
+.tslot.sel .ts-t{color:#fff}
+.tslot.sel .ts-l{color:rgba(255,255,255,0.65)}
+.ts-t{font-family:'Clash Display',sans-serif;font-size:14px;font-weight:700;color:var(--ink)}
+.ts-l{font-size:10px;color:var(--ink3);margin-top:2px}
+.order-summary{
+  background:rgba(92,59,255,0.05);
+  border:1px solid rgba(92,59,255,0.10);
+  border-radius:var(--r);padding:16px;
+}
+.os-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:6px 0;font-size:14px;color:var(--ink2);
+}
+.os-row.total{
+  border-top:1px solid rgba(0,0,0,0.07);
+  margin-top:6px;padding-top:12px;
+}
+.os-row.total span{font-family:'Clash Display',sans-serif;font-weight:700;font-size:16px;color:var(--ink)}
 
-/* ════════════════════════════════════════
-   SCREEN 5 — TRACKING
-════════════════════════════════════════ */
-#s-track .track-map{
-  height:240px;background:linear-gradient(135deg,#e8e4ff 0%,#d4f0e8 100%);
-  position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;
+/* ══════════════════════════════════════════
+   SCREEN: TRACKING
+══════════════════════════════════════════ */
+.track-map-area{
+  height:230px;
+  background:linear-gradient(135deg,#e8e3ff 0%,#d4f0e8 50%,#ffecd4 100%);
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
 }
-.map-placeholder{text-align:center}
-.map-pulse{
-  width:60px;height:60px;border-radius:50%;
-  background:var(--p);display:flex;align-items:center;justify-content:center;
-  font-size:24px;margin:0 auto 8px;
-  box-shadow:0 0 0 0 rgba(79,53,224,0.4);
-  animation:mapPulse 2s infinite;
+.map-grid{
+  position:absolute;inset:0;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,0,0,0.04) 1px,transparent 1px);
+  background-size:28px 28px;
 }
-@keyframes mapPulse{
-  0%{box-shadow:0 0 0 0 rgba(79,53,224,0.4)}
-  70%{box-shadow:0 0 0 24px rgba(79,53,224,0)}
-  100%{box-shadow:0 0 0 0 rgba(79,53,224,0)}
+.map-center{position:relative;z-index:2;text-align:center}
+.map-pin{
+  width:56px;height:56px;border-radius:50%;
+  background:var(--p);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;margin:0 auto 8px;
+  box-shadow:0 0 0 0 rgba(92,59,255,0.3);
+  animation:pinPulse 2s ease-in-out infinite;
 }
-.track-body{padding:20px 20px 110px}
-.track-status{
-  background:var(--p);border-radius:var(--r);padding:18px;margin-bottom:16px;
+@keyframes pinPulse{
+  0%{box-shadow:0 0 0 0 rgba(92,59,255,0.3)}
+  70%{box-shadow:0 0 0 22px rgba(92,59,255,0)}
+  100%{box-shadow:0 0 0 0 rgba(92,59,255,0)}
+}
+.map-label{font-size:12px;font-weight:600;color:var(--ink2)}
+
+.track-body{padding:16px 16px 110px}
+.track-status-card{
+  background:var(--p);border-radius:var(--r);
+  padding:16px;margin-bottom:16px;
   display:flex;align-items:center;gap:14px;
 }
-.track-icon{
+.ts-icon{
   width:48px;height:48px;border-radius:14px;
   background:rgba(255,255,255,0.15);
-  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:22px;
 }
-.track-label{font-size:11px;color:rgba(255,255,255,0.65);font-weight:600;text-transform:uppercase;letter-spacing:0.05em}
-.track-value{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:white}
-.track-eta-strip{text-align:right;margin-left:auto}
-.progress-steps{margin-bottom:20px}
-.progress-step{display:flex;align-items:flex-start;gap:14px;margin-bottom:16px}
-.step-line-wrap{display:flex;flex-direction:column;align-items:center}
-.step-dot{
-  width:28px;height:28px;border-radius:50%;flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;
-}
-.step-dot.done{background:var(--teal);color:white}
-.step-dot.active{background:var(--p);color:white;box-shadow:0 0 0 4px rgba(79,53,224,0.2)}
-.step-dot.todo{background:var(--bg2);color:var(--ink3)}
-.step-vline{width:2px;flex:1;min-height:20px;margin:4px 0}
-.step-vline.done{background:var(--teal)}
-.step-vline.todo{background:var(--bg2)}
-.step-content{padding-top:4px;flex:1}
-.step-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;color:var(--ink)}
-.step-sub{font-size:12px;color:var(--ink3);margin-top:2px}
+.ts-label{font-size:11px;color:rgba(255,255,255,0.6);font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.ts-val{font-family:'Clash Display',sans-serif;font-size:17px;font-weight:700;color:#fff}
+.ts-eta{margin-left:auto;text-align:right}
+.ts-eta-lbl{font-size:10px;color:rgba(255,255,255,0.55)}
+.ts-eta-val{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:#fff}
 
-/* ════════════════════════════════════════
-   SCREEN 6 — PROVIDER APP
-════════════════════════════════════════ */
-#s-provider .prov-header{
-  background:var(--ink);padding:28px 20px 20px;
+/* Progress steps */
+.prog-list{margin-bottom:20px}
+.prog-step{display:flex;gap:14px;margin-bottom:0}
+.prog-left{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.prog-dot{
+  width:30px;height:30px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
 }
-.prov-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
-.prov-welcome{font-size:12px;color:rgba(255,255,255,0.55);margin-bottom:2px}
-.prov-pname{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white}
-.online-toggle{
+.prog-dot.done{background:var(--teal);color:#fff}
+.prog-dot.active{background:var(--p);color:#fff;box-shadow:0 0 0 4px rgba(92,59,255,0.15);animation:activeDot 1.5s ease-in-out infinite}
+@keyframes activeDot{0%,100%{box-shadow:0 0 0 4px rgba(92,59,255,0.15)}50%{box-shadow:0 0 0 8px rgba(92,59,255,0.05)}}
+.prog-dot.todo{background:var(--surface);color:var(--ink3);border:1.5px solid rgba(0,0,0,0.10)}
+.prog-line{width:2px;flex:1;min-height:24px;margin:4px 0}
+.prog-line.done{background:var(--teal)}
+.prog-line.todo{background:rgba(0,0,0,0.08)}
+.prog-content{padding:4px 0 20px;flex:1}
+.prog-title{font-family:'Clash Display',sans-serif;font-size:14px;font-weight:700;color:var(--ink)}
+.prog-sub{font-size:12px;color:var(--ink3);margin-top:2px}
+
+/* ══════════════════════════════════════════
+   SCREEN: PROVIDER APP
+══════════════════════════════════════════ */
+.prov-hdr{
+  background:var(--ink);
+  padding:24px 16px 20px;
+}
+.prov-hdr-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.prov-greet{font-size:12px;color:rgba(255,255,255,0.45);margin-bottom:2px}
+.prov-pname{font-family:'Clash Display',sans-serif;font-size:20px;font-weight:700;color:#fff}
+.online-btn{
   display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,0.08);border:none;
-  padding:8px 14px;border-radius:var(--r-pill);
-  color:white;font-size:13px;font-weight:600;
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.1);
+  padding:8px 16px;border-radius:var(--r-pill);
+  color:#fff;font-size:13px;font-weight:600;
+  transition:background .2s;
 }
-.toggle-dot{
-  width:10px;height:10px;border-radius:50%;
-  background:#4ecda4;box-shadow:0 0 0 3px rgba(78,205,164,0.25);
+.online-btn:hover{background:rgba(255,255,255,0.14)}
+.odot{
+  width:9px;height:9px;border-radius:50%;
+  background:var(--teal);
+  box-shadow:0 0 0 3px rgba(0,201,138,0.2);
+  animation:dotPulse 2s ease-in-out infinite;
 }
-.prov-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.prov-stat{background:rgba(255,255,255,0.07);border-radius:10px;padding:12px;text-align:center}
-.prov-stat-num{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:white}
-.prov-stat-lbl{font-size:10px;color:rgba(255,255,255,0.45);margin-top:1px}
+.prov-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pkpi{
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:14px;padding:12px;text-align:center;
+}
+.pkpi-n{font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;color:#fff}
+.pkpi-l{font-size:10px;color:rgba(255,255,255,0.4);margin-top:2px}
 
-.prov-body{padding:16px 20px 110px}
-.job-card{
-  background:var(--white);border:1px solid var(--border);
-  border-radius:var(--r);padding:16px;margin-bottom:12px;
-  cursor:pointer;
+.prov-body{padding:14px 16px 100px}
+.new-jobs-label{
+  font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--coral);margin-bottom:10px;
+  display:flex;align-items:center;gap:6px;
 }
-.job-card.new{border-color:var(--p);border-width:2px}
-.jc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
-.jc-type{font-family:'Syne',sans-serif;font-size:16px;font-weight:700;color:var(--ink)}
+.new-dot{
+  width:7px;height:7px;border-radius:50%;background:var(--coral);
+  animation:dotPulse 1s ease-in-out infinite;
+}
+.job-card{
+  background:#fff;border:1px solid rgba(0,0,0,0.07);
+  border-radius:var(--r);padding:16px;margin-bottom:12px;
+}
+.job-card.new-job{border-left:3px solid var(--p)}
+.jc-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.jc-type{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:700;color:var(--ink)}
 .jc-meta{font-size:12px;color:var(--ink3);margin-top:2px}
 .jc-problem{
-  background:var(--p-xlight);border-radius:var(--r-sm);
+  background:rgba(92,59,255,0.05);
+  border-left:3px solid var(--p);
+  border-radius:0 10px 10px 0;
   padding:10px 12px;font-size:13px;color:var(--ink2);
-  margin-bottom:12px;border-left:3px solid var(--p);
+  margin-bottom:12px;line-height:1.5;
 }
-.jc-actions{display:flex;gap:8px}
+.jc-btns{display:flex;gap:8px}
 .btn-accept{
-  flex:1;background:var(--teal);color:white;border:none;
-  padding:11px;border-radius:var(--r-sm);
-  font-family:'Syne',sans-serif;font-weight:700;font-size:14px;
+  flex:1;background:var(--teal);color:#fff;
+  padding:12px;border-radius:var(--r-sm);
+  font-family:'Clash Display',sans-serif;font-size:14px;font-weight:700;
+  transition:transform .15s var(--spring);
+  box-shadow:0 4px 12px rgba(0,201,138,0.25);
 }
+.btn-accept:active{transform:scale(.96)}
 .btn-decline{
-  background:var(--bg2);color:var(--ink3);border:none;
-  padding:11px 18px;border-radius:var(--r-sm);
-  font-family:'Syne',sans-serif;font-weight:600;font-size:14px;
+  background:var(--surface);color:var(--ink3);
+  padding:12px 18px;border-radius:var(--r-sm);
+  font-family:'Clash Display',sans-serif;font-size:14px;font-weight:600;
 }
-.earning-row{
+.earn-row{
   display:flex;align-items:center;gap:12px;
-  background:var(--white);border:1px solid var(--border);
-  border-radius:var(--r-sm);padding:12px;margin-bottom:8px;
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
+  border-radius:14px;padding:12px;margin-bottom:8px;
 }
-.earning-icon{
-  width:36px;height:36px;border-radius:10px;
-  display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;
+.earn-icon{
+  width:38px;height:38px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;font-size:16px;
 }
-.earning-desc{flex:1;font-size:13px;color:var(--ink)}
-.earning-desc small{display:block;font-size:11px;color:var(--ink3)}
-.earning-amt{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--teal)}
+.earn-desc{flex:1;font-size:13px;color:var(--ink);font-weight:500}
+.earn-desc small{display:block;font-size:11px;color:var(--ink3);font-weight:400;margin-top:1px}
+.earn-amt{font-family:'Clash Display',sans-serif;font-weight:700;font-size:15px;color:var(--teal2)}
+.earn-amt.neg{color:var(--coral)}
 
-/* ════════════════════════════════════════
-   SCREEN 7 — ADMIN DASHBOARD
-════════════════════════════════════════ */
-#s-admin .admin-header{
-  background:var(--p);padding:24px 20px 20px;
-}
-.admin-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:2px}
-.admin-sub{font-size:12px;color:rgba(255,255,255,0.65)}
-.admin-body{padding:16px 20px 110px}
-.admin-kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.kpi-card{
-  background:var(--white);border:1px solid var(--border);
+/* ══════════════════════════════════════════
+   SCREEN: ADMIN
+══════════════════════════════════════════ */
+.admin-hdr{background:var(--p);padding:24px 16px 20px}
+.admin-htitle{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:2px}
+.admin-hsub{font-size:12px;color:rgba(255,255,255,0.55)}
+.admin-body{padding:14px 16px 100px}
+.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.kpi-c{
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
   border-radius:var(--r-sm);padding:14px;
 }
-.kpi-icon{font-size:20px;margin-bottom:8px}
-.kpi-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--ink)}
-.kpi-lbl{font-size:11px;color:var(--ink3);margin-top:1px}
-.kpi-change{font-size:11px;font-weight:600;margin-top:4px}
-.kpi-up{color:var(--teal)}
-.kpi-down{color:var(--coral)}
+.kpi-icon-e{font-size:20px;margin-bottom:8px}
+.kpi-n{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:var(--ink)}
+.kpi-l{font-size:11px;color:var(--ink3);margin-top:1px}
+.kpi-ch{font-size:11px;font-weight:600;margin-top:5px}
+.kpi-up{color:var(--teal2)}.kpi-dn{color:var(--coral)}
 
-.admin-table{width:100%;border-collapse:collapse;font-size:13px}
-.admin-table th{text-align:left;padding:8px 10px;font-size:11px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.04em;border-bottom:1px solid var(--border)}
-.admin-table td{padding:10px;border-bottom:1px solid rgba(0,0,0,0.04);color:var(--ink2);vertical-align:middle}
-.admin-table tr:last-child td{border-bottom:none}
-
-.chart-bar-wrap{margin-bottom:20px}
-.chart-row{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.chart-label{font-size:12px;color:var(--ink3);width:60px;flex-shrink:0;text-align:right}
-.chart-bar{height:24px;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:11px;font-weight:600;color:white;transition:width 0.5s ease}
-
-/* ════════════════════════════════════════
-   SCREEN 8 — BACKEND PLAN
-════════════════════════════════════════ */
-#s-backend .backend-body{padding:20px 20px 100px}
-.arch-section{margin-bottom:24px}
-.arch-title{
-  font-family:'Syne',sans-serif;font-size:15px;font-weight:800;
-  color:var(--ink);margin-bottom:10px;
-  display:flex;align-items:center;gap:8px;
+.admin-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.admin-card-title{font-family:'Clash Display',sans-serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:14px}
+.bar-chart{margin-bottom:4px}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.bar-lbl{font-size:12px;color:var(--ink3);width:64px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;background:var(--surface);border-radius:4px;overflow:hidden;height:22px}
+.bar-fill{
+  height:100%;border-radius:4px;
+  display:flex;align-items:center;padding-left:8px;
+  font-size:11px;font-weight:700;color:#fff;
 }
-.arch-card{
-  background:var(--white);border:1px solid var(--border);
-  border-radius:var(--r-sm);overflow:hidden;
-}
+.atbl{width:100%;border-collapse:collapse;font-size:13px}
+.atbl th{text-align:left;padding:7px 8px;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid rgba(0,0,0,0.06)}
+.atbl td{padding:10px 8px;border-bottom:1px solid rgba(0,0,0,0.04);color:var(--ink2);vertical-align:middle}
+.atbl tr:last-child td{border-bottom:none}
+
+/* ══════════════════════════════════════════
+   SCREEN: BACKEND
+══════════════════════════════════════════ */
+.backend-body{padding:16px 16px 100px}
+.arch-sec{margin-bottom:22px}
+.arch-title{font-family:'Clash Display',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.arch-card{background:#fff;border:1px solid rgba(0,0,0,0.06);border-radius:var(--r);overflow:hidden}
 .arch-row{
   display:flex;align-items:flex-start;gap:12px;
   padding:12px 14px;border-bottom:1px solid rgba(0,0,0,0.04);
 }
 .arch-row:last-child{border-bottom:none}
-.arch-dot{
-  width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0;
-}
-.arch-key{font-size:13px;font-weight:600;color:var(--ink);min-width:90px}
+.arch-dot2{width:8px;height:8px;border-radius:50%;margin-top:6px;flex-shrink:0}
+.arch-key{font-size:13px;font-weight:600;color:var(--ink);min-width:90px;flex-shrink:0}
 .arch-val{font-size:13px;color:var(--ink3);line-height:1.5}
-.api-endpoint{
-  background:var(--p-xlight);border-radius:var(--r-sm);
+.ep{
+  background:var(--surface);border-radius:var(--r-sm);
   padding:10px 14px;margin-bottom:6px;
   display:flex;align-items:center;gap:10px;
 }
-.method-badge{
-  font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;flex-shrink:0;font-family:'DM Sans',sans-serif;
-}
-.get{background:#dff5ed;color:var(--teal)}
-.post{background:var(--p-light);color:var(--p)}
-.put{background:var(--amber-light);color:var(--amber)}
-.delete{background:var(--coral-light);color:var(--coral)}
-.ep-path{font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;color:var(--ink);flex:1}
-.ep-desc{font-size:11px;color:var(--ink3)}
-.tech-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.tech-item{
-  background:var(--white);border:1px solid var(--border);
+.mth{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;flex-shrink:0}
+.get{background:#dff5ed;color:var(--teal2)}.post{background:rgba(92,59,255,0.10);color:var(--p)}.put{background:var(--amber-bg);color:var(--amber)}.del{background:var(--coral-bg);color:var(--coral)}
+.ep-path{font-size:12px;font-weight:600;color:var(--ink);font-family:monospace;flex:1}
+.tech-grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.titem{
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
   border-radius:var(--r-sm);padding:12px;
   display:flex;align-items:center;gap:10px;
 }
-.tech-emoji{font-size:20px;flex-shrink:0}
-.tech-name{font-size:13px;font-weight:600;color:var(--ink)}
-.tech-role{font-size:11px;color:var(--ink3)}
+.titem-e{font-size:20px;flex-shrink:0}
+.titem-n{font-size:13px;font-weight:600;color:var(--ink)}
+.titem-r{font-size:11px;color:var(--ink3)}
 
-/* ════════════════════════════════════════
-   SCREEN 9 — PROFILE / ORDERS
-════════════════════════════════════════ */
-#s-profile .profile-header{
-  background:var(--p);padding:48px 20px 24px;text-align:center;
+/* ══════════════════════════════════════════
+   SCREEN: PROFILE
+══════════════════════════════════════════ */
+.prof-hdr{
+  background:linear-gradient(135deg,var(--p) 0%,var(--p2) 100%);
+  padding:52px 16px 28px;text-align:center;
 }
-.prof-avatar{
-  width:72px;height:72px;border-radius:50%;
-  background:rgba(255,255,255,0.15);
+.prof-av{
+  width:76px;height:76px;border-radius:50%;
+  background:rgba(255,255,255,0.2);
   display:flex;align-items:center;justify-content:center;
-  font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:white;
-  margin:0 auto 12px;
+  font-family:'Clash Display',sans-serif;font-weight:700;font-size:26px;color:#fff;
+  margin:0 auto 12px;border:3px solid rgba(255,255,255,0.3);
 }
-.prof-name{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:white;margin-bottom:2px}
-.prof-sub{font-size:13px;color:rgba(255,255,255,0.65)}
-.profile-body{padding:20px 20px 100px}
+.prof-name{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:2px}
+.prof-sub{font-size:13px;color:rgba(255,255,255,0.6)}
+.prof-body{padding:16px 16px 100px}
 .menu-item{
   display:flex;align-items:center;gap:14px;
-  background:var(--white);border:1px solid var(--border);
+  background:#fff;border:1px solid rgba(0,0,0,0.06);
   border-radius:var(--r-sm);padding:14px;margin-bottom:8px;
-  cursor:pointer;transition:border-color 0.15s;
+  cursor:pointer;transition:all .15s;
 }
-.menu-item:active{border-color:var(--p)}
-.menu-item-icon{
-  width:38px;height:38px;border-radius:10px;
+.menu-item:hover{border-color:rgba(92,59,255,0.2)}
+.menu-item:active{transform:scale(.98)}
+.mi-icon{
+  width:38px;height:38px;border-radius:11px;
   display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;
 }
-.menu-item-label{flex:1;font-size:14px;font-weight:500;color:var(--ink)}
-.menu-arrow{color:var(--ink3);font-size:16px}
+.mi-label{flex:1;font-size:14px;font-weight:500;color:var(--ink)}
+.mi-arrow{font-size:18px;color:var(--ink3)}
 
-/* ════════════════════════════════════════
-   NOTIFICATIONS / TOASTS
-════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   TOAST
+══════════════════════════════════════════ */
 .toast{
-  position:fixed;top:80px;left:50%;transform:translateX(-50%);
-  background:var(--ink);color:white;
-  padding:12px 20px;border-radius:var(--r-pill);
-  font-size:14px;font-weight:500;
-  z-index:200;white-space:nowrap;
-  opacity:0;transition:opacity 0.3s;pointer-events:none;
+  position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-8px);
+  background:var(--ink);color:#fff;
+  padding:11px 20px;border-radius:var(--r-pill);
+  font-size:13px;font-weight:500;z-index:500;
+  pointer-events:none;opacity:0;white-space:nowrap;
+  transition:opacity .25s,transform .25s var(--spring);
   max-width:90%;
 }
-.toast.show{opacity:1}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ════════════════════════════════════════
-   MODAL
-════════════════════════════════════════ */
-.modal-overlay{
+/* ══════════════════════════════════════════
+   MODAL / BOTTOM SHEET
+══════════════════════════════════════════ */
+.overlay{
   display:none;position:fixed;inset:0;
-  background:rgba(13,11,31,0.6);z-index:150;
+  background:rgba(10,8,18,0.55);
+  z-index:200;backdrop-filter:blur(4px);
   align-items:flex-end;justify-content:center;
 }
-.modal-overlay.open{display:flex}
-.modal-sheet{
-  background:var(--white);border-radius:20px 20px 0 0;
-  padding:28px 24px calc(32px + env(safe-area-inset-bottom,0px));
-  width:100%;max-width:420px;
-  animation:slideUp 0.3s ease;
+.overlay.open{display:flex}
+.sheet{
+  background:var(--cream);
+  border-radius:24px 24px 0 0;
+  padding:24px 20px calc(28px + env(safe-area-inset-bottom,0px));
+  width:100%;max-width:430px;
+  animation:sheetUp .35s var(--spring) both;
 }
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-handle{
-  width:40px;height:4px;border-radius:2px;
-  background:rgba(0,0,0,0.15);margin:0 auto 20px;
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.sheet-handle{width:40px;height:4px;border-radius:2px;background:rgba(0,0,0,0.12);margin:0 auto 20px}
+.sheet-title{font-family:'Clash Display',sans-serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:6px}
+.sheet-sub{font-size:14px;color:var(--ink3);margin-bottom:22px;line-height:1.5}
+.confirm-row{
+  background:rgba(92,59,255,0.05);border-radius:14px;
+  padding:14px;margin-bottom:20px;
 }
-.modal-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--ink);margin-bottom:6px}
-.modal-sub{font-size:14px;color:var(--ink3);margin-bottom:20px}
-
-/* ════════════════════════════════════════
-   ROLE SELECTOR (landing)
-════════════════════════════════════════ */
-#s-landing{
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:40px 24px;background:var(--white);
-}
-.landing-logo{
-  font-family:'Syne',sans-serif;font-size:32px;font-weight:800;
-  color:var(--p);text-align:center;margin-bottom:8px;
-}
-.landing-dot{
-  width:12px;height:12px;border-radius:50%;
-  background:var(--teal);display:inline-block;margin-right:4px;
-  animation:pulse2 2s infinite;
-}
-@keyframes pulse2{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
-.landing-tag{font-size:14px;color:var(--ink3);text-align:center;margin-bottom:48px}
-.role-card{
-  width:100%;border:2px solid var(--border);
-  border-radius:var(--r);padding:22px;margin-bottom:12px;
-  display:flex;align-items:center;gap:16px;
-  cursor:pointer;transition:all 0.2s;background:var(--white);
-}
-.role-card:hover,.role-card:active{border-color:var(--p);background:var(--p-xlight);transform:scale(0.99)}
-.role-emoji{font-size:32px;flex-shrink:0}
-.role-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:var(--ink);margin-bottom:3px}
-.role-sub{font-size:13px;color:var(--ink3)}
-.role-arrow{color:var(--ink3);font-size:20px;margin-left:auto}
+.cr-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0}
+.cr-row:not(:last-child){margin-bottom:4px}
 </style>
 </head>
 <body>
+<div class="shell">
 
-<div class="app-shell">
-
-<!-- ════════════════ LANDING ════════════════ -->
-<div id="s-landing" class="screen active">
-  <div class="landing-logo"><span class="landing-dot"></span>Solution</div>
-  <p class="landing-tag">Just type your problem, get a solution</p>
-
-  <div onclick="go('home')" class="role-card">
-    <span class="role-emoji">🙋</span>
-    <div>
-      <div class="role-title">I need help</div>
-      <div class="role-sub">Find a mechanic, plumber, or any service</div>
-    </div>
-    <span class="role-arrow">›</span>
-  </div>
-
-  <div onclick="go('provider')" class="role-card">
-    <span class="role-emoji">🔧</span>
-    <div>
-      <div class="role-title">I'm a service provider</div>
-      <div class="role-sub">Accept jobs, track earnings, grow your business</div>
-    </div>
-    <span class="role-arrow">›</span>
-  </div>
-
-  <div onclick="go('admin')" class="role-card">
-    <span class="role-emoji">⚙️</span>
-    <div>
-      <div class="role-title">Admin dashboard</div>
-      <div class="role-sub">Manage all orders, users, and providers</div>
-    </div>
-    <span class="role-arrow">›</span>
-  </div>
-
-  <div onclick="go('backend')" class="role-card" style="border-color:var(--amber);background:var(--amber-light)">
-    <span class="role-emoji">📐</span>
-    <div>
-      <div class="role-title">Backend plan & tech stack</div>
-      <div class="role-sub">Full architecture, APIs, and database design</div>
-    </div>
-    <span class="role-arrow">›</span>
+<!-- ════ LANDING ════ -->
+<div id="s-landing" class="screen active" style="display:flex">
+  <div class="land-glow land-glow1"></div>
+  <div class="land-glow land-glow2"></div>
+  <div class="land-badge"><span>🟢</span> Live in Agra</div>
+  <h1 class="land-title">Your city,<br>your <span>solution.</span></h1>
+  <p class="land-sub">Find any service around you — mechanics, plumbers, electricians and more. Just type.</p>
+  <div class="role-grid">
+    <button class="role-card" onclick="go('home','in')">
+      <div class="role-icon" style="background:rgba(92,59,255,0.10)">🙋</div>
+      <div class="role-text">
+        <div class="role-title">I need help</div>
+        <div class="role-sub">Find a service provider near you</div>
+      </div>
+      <span class="role-arrow">›</span>
+    </button>
+    <button class="role-card" onclick="go('provider','in')">
+      <div class="role-icon" style="background:rgba(0,201,138,0.10)">🔧</div>
+      <div class="role-text">
+        <div class="role-title">I'm a provider</div>
+        <div class="role-sub">Accept jobs, earn money</div>
+      </div>
+      <span class="role-arrow">›</span>
+    </button>
+    <button class="role-card" onclick="go('admin','in')">
+      <div class="role-icon" style="background:rgba(245,166,35,0.10)">⚙️</div>
+      <div class="role-text">
+        <div class="role-title">Admin dashboard</div>
+        <div class="role-sub">Manage all orders & providers</div>
+      </div>
+      <span class="role-arrow">›</span>
+    </button>
+    <button class="role-card" onclick="go('backend','in')" style="border-color:rgba(245,166,35,0.3);background:rgba(245,166,35,0.04)">
+      <div class="role-icon" style="background:var(--amber-bg)">📐</div>
+      <div class="role-text">
+        <div class="role-title">Backend plan</div>
+        <div class="role-sub">Tech stack, APIs, database</div>
+      </div>
+      <span class="role-arrow">›</span>
+    </button>
   </div>
 </div>
 
-
-<!-- ════════════════ HOME (Customer) ════════════════ -->
+<!-- ════ HOME ════ -->
 <div id="s-home" class="screen">
-  <div id="s-home-inner">
-    <div class="hero-header">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <div>
-          <div class="hero-greeting">Good morning 👋</div>
-          <div class="hero-name">Where do you need help?</div>
-        </div>
-        <div onclick="go('profile')" style="width:40px;height:40px;border-radius:12px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer">👤</div>
+  <div class="home-hero">
+    <div class="hero-top">
+      <div>
+        <div class="hero-greet">Good day 👋</div>
+        <div class="hero-name">Where do you need help?</div>
       </div>
-      <div class="search-float" onclick="go('search')">
-        <span style="font-size:20px">🔍</span>
-        <input type="text" placeholder="Type your problem here…" id="homeSearchInput" readonly style="cursor:pointer"/>
-        <button class="search-go" onclick="event.stopPropagation();go('search')">→</button>
-      </div>
+      <button class="hero-avatar-btn" onclick="go('profile','in')">👤</button>
     </div>
-
-    <div class="home-body">
-      <!-- Active order card -->
-      <div class="order-card">
-        <div class="order-card-title">Active order</div>
-        <div class="order-card-name">Suresh Auto — Mechanic</div>
-        <div class="order-card-sub">Car battery jumpstart · Tajganj</div>
-        <div class="order-eta">
-          <span>⏱ Arriving in</span>
-          <strong>12 min</strong>
-          <button onclick="go('track')" style="background:white;color:var(--p);border:none;padding:6px 14px;border-radius:8px;font-size:12px;font-weight:700">Track →</button>
-        </div>
-      </div>
-
-      <div class="section-label">Quick services <button class="see-all">See all</button></div>
-      <div class="quick-grid">
-        <div class="quick-item" onclick="searchFor('mechanic')">
-          <span class="quick-emoji">🔧</span><span class="quick-label">Mechanic</span>
-        </div>
-        <div class="quick-item" onclick="searchFor('plumber')">
-          <span class="quick-emoji">🪠</span><span class="quick-label">Plumber</span>
-        </div>
-        <div class="quick-item" onclick="searchFor('electrician')">
-          <span class="quick-emoji">⚡</span><span class="quick-label">Electric</span>
-        </div>
-        <div class="quick-item" onclick="searchFor('carpenter')">
-          <span class="quick-emoji">🪚</span><span class="quick-label">Carpenter</span>
-        </div>
-        <div class="quick-item" onclick="searchFor('out of fuel')">
-          <span class="quick-emoji">⛽</span><span class="quick-label">Fuel</span>
-        </div>
-        <div class="quick-item" onclick="searchFor('pickup and drop')">
-          <span class="quick-emoji">🚗</span><span class="quick-label">Transport</span>
-        </div>
-        <div class="quick-item" onclick="searchFor('painter')">
-          <span class="quick-emoji">🎨</span><span class="quick-label">Painter</span>
-        </div>
-        <div class="quick-item" onclick="go('search')">
-          <span class="quick-emoji">✨</span><span class="quick-label">More</span>
-        </div>
-      </div>
-
-      <div class="section-label">Top rated nearby</div>
-      <div class="provider-mini" onclick="openProvider('SA','Suresh Auto','⭐ 4.9 · Mechanic','#eeebff','#5b45e0','Tajganj, Agra','12 min','₹200–500')">
-        <div class="prov-avatar" style="background:#eeebff;color:#4f35e0">SA</div>
-        <div class="prov-info">
-          <div class="prov-name">Suresh Auto</div>
-          <div class="prov-meta"><span class="stars">★★★★★</span> 4.9 · Mechanic · Tajganj</div>
-        </div>
-        <div class="prov-eta">12 min</div>
-      </div>
-      <div class="provider-mini" onclick="openProvider('DP','Deepak Plumbing','⭐ 4.8 · Plumber','#dff5ed','#0b9b73','Sikandra, Agra','18 min','₹150–400')">
-        <div class="prov-avatar" style="background:#dff5ed;color:#0b9b73">DP</div>
-        <div class="prov-info">
-          <div class="prov-name">Deepak Plumbing</div>
-          <div class="prov-meta"><span class="stars">★★★★★</span> 4.8 · Plumber · Sikandra</div>
-        </div>
-        <div class="prov-eta">18 min</div>
-      </div>
-      <div class="provider-mini" onclick="openProvider('BB','Bijli Bhai','⭐ 4.9 · Electrician','#fdf2e0','#c97a10','Shahganj, Agra','10 min','₹200–600')">
-        <div class="prov-avatar" style="background:#fdf2e0;color:#c97a10">BB</div>
-        <div class="prov-info">
-          <div class="prov-name">Bijli Bhai</div>
-          <div class="prov-meta"><span class="stars">★★★★★</span> 4.9 · Electrician · Shahganj</div>
-        </div>
-        <div class="prov-eta">10 min</div>
-      </div>
+    <div class="search-float" onclick="go('search','in')">
+      <span style="font-size:18px;color:var(--ink3)">🔍</span>
+      <input id="homeSearch" type="text" placeholder="Type your problem…" readonly/>
+      <button class="search-go-btn" onclick="event.stopPropagation();go('search','in')">→</button>
     </div>
   </div>
-
-  <!-- Tab bar -->
+  <div class="home-body">
+    <div class="active-order">
+      <div class="ao-label"><div class="ao-pulse"></div>Active order</div>
+      <div class="ao-name">Suresh Auto — Mechanic</div>
+      <div class="ao-sub">Battery jumpstart · Tajganj, Agra</div>
+      <div class="ao-bottom">
+        <div class="ao-eta">Arriving in <strong id="etaMins">12</strong> min</div>
+        <button class="ao-track-btn" onclick="go('track','in')">Track live →</button>
+      </div>
+    </div>
+    <div class="sec-label">Quick services <button class="see-all">See all</button></div>
+    <div class="quick-grid">
+      <button class="quick-item" onclick="searchFor('mechanic')"><span class="qi-emoji">🔧</span><span class="qi-label">Mechanic</span></button>
+      <button class="quick-item" onclick="searchFor('plumber')"><span class="qi-emoji">🪠</span><span class="qi-label">Plumber</span></button>
+      <button class="quick-item" onclick="searchFor('electrician')"><span class="qi-emoji">⚡</span><span class="qi-label">Electric</span></button>
+      <button class="quick-item" onclick="searchFor('carpenter')"><span class="qi-emoji">🪚</span><span class="qi-label">Carpenter</span></button>
+      <button class="quick-item" onclick="searchFor('out of fuel')"><span class="qi-emoji">⛽</span><span class="qi-label">Fuel</span></button>
+      <button class="quick-item" onclick="searchFor('pickup')"><span class="qi-emoji">🚗</span><span class="qi-label">Transport</span></button>
+      <button class="quick-item" onclick="searchFor('painter')"><span class="qi-emoji">🎨</span><span class="qi-label">Painter</span></button>
+      <button class="quick-item" onclick="go('search','in')"><span class="qi-emoji">✨</span><span class="qi-label">More</span></button>
+    </div>
+    <div class="sec-label">Top rated nearby</div>
+    <div class="prov-mini" onclick="openDetail('SA','Suresh Auto','Mechanic · Tajganj','#5c3bff','rgba(92,59,255,0.12)','₹200')">
+      <div class="pav" style="background:rgba(92,59,255,0.12);color:var(--p)">SA</div>
+      <div class="prov-info">
+        <div class="prov-name">Suresh Auto</div>
+        <div class="prov-meta"><span class="stars">★★★★★</span>4.9 · Mechanic · Tajganj</div>
+      </div>
+      <div class="prov-eta-badge">12 min</div>
+    </div>
+    <div class="prov-mini" onclick="openDetail('DP','Deepak Plumbing','Plumber · Sikandra','#00a370','rgba(0,201,138,0.10)','₹150')">
+      <div class="pav" style="background:rgba(0,201,138,0.10);color:var(--teal2)">DP</div>
+      <div class="prov-info">
+        <div class="prov-name">Deepak Plumbing</div>
+        <div class="prov-meta"><span class="stars">★★★★★</span>4.8 · Plumber · Sikandra</div>
+      </div>
+      <div class="prov-eta-badge">18 min</div>
+    </div>
+    <div class="prov-mini" onclick="openDetail('BB','Bijli Bhai','Electrician · Shahganj','#c97a10','rgba(245,166,35,0.10)','₹200')">
+      <div class="pav" style="background:rgba(245,166,35,0.10);color:var(--amber)">BB</div>
+      <div class="prov-info">
+        <div class="prov-name">Bijli Bhai</div>
+        <div class="prov-meta"><span class="stars">★★★★★</span>4.9 · Electrician · Shahganj</div>
+      </div>
+      <div class="prov-eta-badge">10 min</div>
+    </div>
+  </div>
   <div class="tab-bar">
-    <button class="tab-item active" onclick="tabHome()">
-      <span class="tab-icon">🏠</span><span>Home</span>
-    </button>
-    <button class="tab-item" onclick="go('search')">
-      <span class="tab-icon">🔍</span><span>Search</span>
-    </button>
-    <button class="tab-item" onclick="go('track')">
-      <span class="tab-icon">📍</span><span>Track</span>
-    </button>
-    <button class="tab-item" onclick="go('profile')">
-      <span class="tab-icon">👤</span><span>Profile</span>
-    </button>
+    <button class="tab-btn active" onclick="tabHome()"><div class="tab-icon-wrap">🏠</div><span>Home</span></button>
+    <button class="tab-btn" onclick="go('search','in')"><div class="tab-icon-wrap">🔍</div><span>Search</span></button>
+    <button class="tab-btn" onclick="go('track','in')"><div class="tab-icon-wrap">📍</div><span>Track</span></button>
+    <button class="tab-btn" onclick="go('profile','in')"><div class="tab-icon-wrap">👤</div><span>Profile</span></button>
   </div>
 </div>
 
-
-<!-- ════════════════ SEARCH ════════════════ -->
+<!-- ════ SEARCH ════ -->
 <div id="s-search" class="screen">
-  <div class="top-nav">
-    <button class="nav-back" onclick="go('home')">←</button>
-    <span class="nav-title">Find a service</span>
-    <span></span>
+  <div class="nav">
+    <button class="nav-back" onclick="goBack()">←</button>
+    <span class="nav-title">Find help</span>
+    <span style="width:38px"></span>
   </div>
-  <div class="search-bar-top">
-    <span>🔍</span>
-    <input type="text" id="searchInput" placeholder="e.g. My tap is leaking…" oninput="filterResults(this.value)" />
+  <div class="search-top">
+    <div class="search-input-wrap">
+      <span style="font-size:18px">🔍</span>
+      <input id="searchInput" type="text" placeholder="e.g. My tap is leaking…" oninput="filterResults(this.value)" autofocus/>
+    </div>
   </div>
-  <div class="filter-row" id="filterRow">
-    <button class="filter-chip on" onclick="setFilter(this,'All')">All</button>
-    <button class="filter-chip" onclick="setFilter(this,'Mechanic')">🔧 Mechanic</button>
-    <button class="filter-chip" onclick="setFilter(this,'Plumber')">🪠 Plumber</button>
-    <button class="filter-chip" onclick="setFilter(this,'Electric')">⚡ Electric</button>
-    <button class="filter-chip" onclick="setFilter(this,'Transport')">🚗 Transport</button>
-    <button class="filter-chip" onclick="setFilter(this,'Carpenter')">🪚 Carpenter</button>
+  <div class="filter-scroll">
+    <button class="fchip on" onclick="setFilter(this,'All')">All</button>
+    <button class="fchip" onclick="setFilter(this,'Mechanic')">🔧 Mechanic</button>
+    <button class="fchip" onclick="setFilter(this,'Plumber')">🪠 Plumber</button>
+    <button class="fchip" onclick="setFilter(this,'Electrician')">⚡ Electric</button>
+    <button class="fchip" onclick="setFilter(this,'Carpenter')">🪚 Carpenter</button>
+    <button class="fchip" onclick="setFilter(this,'Transport')">🚗 Transport</button>
   </div>
-  <div class="results-list" id="resultsList">
-    <!-- populated by JS -->
-  </div>
+  <div class="results-wrap" id="resultsList"></div>
 </div>
 
-
-<!-- ════════════════ PROVIDER DETAIL ════════════════ -->
+<!-- ════ DETAIL ════ -->
 <div id="s-detail" class="screen">
-  <div class="top-nav" style="position:absolute;top:0;left:0;right:0;background:transparent;border:none;z-index:10">
-    <button class="nav-back" onclick="goBack()" style="background:rgba(255,255,255,0.2)">←</button>
+  <div class="nav" style="position:absolute;top:0;left:0;right:0;background:transparent;border:none;z-index:10">
+    <button class="nav-back" onclick="goBack()">←</button>
     <span></span>
-    <button class="nav-action" onclick="toast('Added to favourites ❤️')">♡ Save</button>
+    <button style="background:rgba(255,255,255,0.2);border:none;color:#fff;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:600" onclick="toast('❤️ Saved to favourites')">♡ Save</button>
   </div>
   <div class="detail-hero" id="detailHero">
-    <div class="detail-avatar" id="detailAvatar">SA</div>
-    <div class="detail-name" id="detailName">Suresh Auto</div>
-    <div class="detail-sub" id="detailSub">Mechanic · Tajganj, Agra</div>
-    <div class="detail-stats">
-      <div class="detail-stat"><div class="detail-stat-num">4.9</div><div class="detail-stat-lbl">Rating</div></div>
-      <div class="detail-stat"><div class="detail-stat-num">240+</div><div class="detail-stat-lbl">Jobs done</div></div>
-      <div class="detail-stat"><div class="detail-stat-num">3 yrs</div><div class="detail-stat-lbl">Experience</div></div>
+    <div class="det-avatar" id="detailAv">SA</div>
+    <div class="det-name" id="detailName">Suresh Auto</div>
+    <div class="det-sub" id="detailSub">Mechanic · Tajganj, Agra</div>
+    <div class="det-stats">
+      <div class="det-stat"><div class="det-stat-n">4.9</div><div class="det-stat-l">Rating</div></div>
+      <div class="det-stat"><div class="det-stat-n">240+</div><div class="det-stat-l">Jobs</div></div>
+      <div class="det-stat"><div class="det-stat-n">3 yrs</div><div class="det-stat-l">Exp.</div></div>
     </div>
   </div>
-  <div class="detail-body">
-    <div class="detail-section-title">Services offered</div>
+  <div class="det-body">
+    <div class="det-sec-title">Services offered</div>
     <div id="detailServices">
-      <span class="service-tag">🔧 Car repair</span>
-      <span class="service-tag">🔋 Battery jumpstart</span>
-      <span class="service-tag">🛞 Tyre change</span>
-      <span class="service-tag">🛢️ Oil change</span>
-      <span class="service-tag">⛽ Fuel delivery</span>
+      <span class="svc-tag">🔧 Car repair</span><span class="svc-tag">🔋 Battery jump</span>
+      <span class="svc-tag">🛞 Tyre change</span><span class="svc-tag">🛢️ Oil change</span>
+      <span class="svc-tag">⛽ Fuel delivery</span>
     </div>
-    <div class="detail-section-title">About</div>
-    <p style="font-size:14px;color:var(--ink2);line-height:1.6">10 years of experience in car and bike repair. Available 7 days a week. Fully equipped with all tools. Come to your location within the city.</p>
-    <div class="detail-section-title">Reviews</div>
-    <div class="review-item">
-      <div class="review-author">Amit S. <span class="stars" style="font-size:12px">★★★★★</span></div>
-      <div class="review-text">Fixed my car in 20 minutes. Super fast and professional. Highly recommend!</div>
+    <div class="det-sec-title">About</div>
+    <p style="font-size:14px;color:var(--ink2);line-height:1.7">10 years of hands-on experience in car and bike repair. Available 7 days a week. Fully equipped with professional tools. Comes directly to your location anywhere in Agra.</p>
+    <div class="det-sec-title">Reviews</div>
+    <div class="rev-card">
+      <div class="rev-author">Amit S. <span class="stars" style="font-size:11px">★★★★★</span></div>
+      <div class="rev-text">Fixed my car in 20 minutes. Super fast and professional. Highly recommend!</div>
     </div>
-    <div class="review-item">
-      <div class="review-author">Priya K. <span class="stars" style="font-size:12px">★★★★★</span></div>
-      <div class="review-text">Battery was dead at midnight, called Suresh and he arrived in 15 mins. Lifesaver!</div>
+    <div class="rev-card">
+      <div class="rev-author">Priya K. <span class="stars" style="font-size:11px">★★★★★</span></div>
+      <div class="rev-text">Battery was dead at midnight, Suresh arrived in 15 mins. Absolute lifesaver!</div>
     </div>
-    <div class="review-item">
-      <div class="review-author">Rahul M. <span class="stars" style="font-size:12px">★★★★☆</span></div>
-      <div class="review-text">Good work, fair price. Explained everything before starting. Will use again.</div>
+    <div class="rev-card">
+      <div class="rev-author">Rahul M. <span class="stars" style="font-size:11px">★★★★☆</span></div>
+      <div class="rev-text">Good work and fair pricing. Explained everything before starting. Will use again.</div>
     </div>
   </div>
   <div class="book-strip">
-    <div class="book-price">
+    <div class="book-price-info">
       <div class="book-price-lbl">Starting from</div>
       <div class="book-price-val" id="detailPrice">₹200</div>
     </div>
-    <button class="book-btn" onclick="go('book')">Book now →</button>
+    <button class="book-now-btn" onclick="go('book','in')">Book now →</button>
   </div>
 </div>
 
-
-<!-- ════════════════ BOOKING ════════════════ -->
+<!-- ════ BOOKING ════ -->
 <div id="s-book" class="screen">
-  <div class="top-nav">
-    <button class="nav-back" onclick="go('detail')">←</button>
+  <div class="nav">
+    <button class="nav-back" onclick="goBack()">←</button>
     <span class="nav-title">Book service</span>
-    <span></span>
+    <span style="width:38px"></span>
   </div>
   <div class="book-body">
     <div class="card" style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-      <div id="bookAvatar" class="prov-avatar" style="background:#eeebff;color:#4f35e0;width:48px;height:48px;border-radius:14px;flex-shrink:0">SA</div>
-      <div>
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px" id="bookName">Suresh Auto</div>
+      <div id="bookAv" class="pav" style="background:rgba(92,59,255,0.12);color:var(--p);width:50px;height:50px;border-radius:14px">SA</div>
+      <div style="flex:1">
+        <div id="bookName" style="font-family:'Clash Display',sans-serif;font-weight:700;font-size:15px">Suresh Auto</div>
         <div style="font-size:12px;color:var(--ink3)">Mechanic · Tajganj</div>
       </div>
-      <span class="pill pill-teal" style="margin-left:auto">12 min away</span>
+      <span class="pill pill-green">12 min away</span>
     </div>
-
-    <div class="form-group">
+    <div class="fg">
       <label>Describe your problem</label>
-      <textarea placeholder="e.g. My car battery is dead, I need a jumpstart near Taj Mahal road…"></textarea>
+      <textarea placeholder="e.g. My car won't start near Taj Mahal gate. Battery seems dead…"></textarea>
     </div>
-
-    <div class="form-group">
+    <div class="fg">
       <label>Your address</label>
       <input type="text" placeholder="e.g. 42 Fatehabad Road, Agra"/>
     </div>
-
-    <div class="form-group">
+    <div class="fg">
       <label>When do you need help?</label>
-      <div class="time-slots">
-        <div class="time-slot selected" onclick="selectSlot(this)">
-          <div class="ts-time">Now</div>
-          <div class="ts-label">ASAP</div>
-        </div>
-        <div class="time-slot" onclick="selectSlot(this)">
-          <div class="ts-time">2:00</div>
-          <div class="ts-label">Today</div>
-        </div>
-        <div class="time-slot" onclick="selectSlot(this)">
-          <div class="ts-time">4:00</div>
-          <div class="ts-label">Today</div>
-        </div>
-        <div class="time-slot" onclick="selectSlot(this)">
-          <div class="ts-time">6:00</div>
-          <div class="ts-label">Today</div>
-        </div>
-        <div class="time-slot" onclick="selectSlot(this)">
-          <div class="ts-time">10:00</div>
-          <div class="ts-label">Tomorrow</div>
-        </div>
-        <div class="time-slot" onclick="selectSlot(this)">
-          <div class="ts-time">12:00</div>
-          <div class="ts-label">Tomorrow</div>
-        </div>
+      <div class="time-grid">
+        <div class="tslot sel" onclick="selSlot(this)"><div class="ts-t">Now</div><div class="ts-l">ASAP</div></div>
+        <div class="tslot" onclick="selSlot(this)"><div class="ts-t">2:00</div><div class="ts-l">Today</div></div>
+        <div class="tslot" onclick="selSlot(this)"><div class="ts-t">4:00</div><div class="ts-l">Today</div></div>
+        <div class="tslot" onclick="selSlot(this)"><div class="ts-t">6:00</div><div class="ts-l">Today</div></div>
+        <div class="tslot" onclick="selSlot(this)"><div class="ts-t">10:00</div><div class="ts-l">Tomorrow</div></div>
+        <div class="tslot" onclick="selSlot(this)"><div class="ts-t">12:00</div><div class="ts-l">Tomorrow</div></div>
       </div>
     </div>
-
     <div class="order-summary">
-      <div class="os-row"><span style="color:var(--ink3)">Service charge</span><span>₹200</span></div>
-      <div class="os-row"><span style="color:var(--ink3)">Convenience fee</span><span>₹20</span></div>
-      <div class="os-row"><span style="color:var(--ink3)">Travel (approx)</span><span>₹30</span></div>
-      <div class="os-row total"><span style="color:var(--ink)">Total estimate</span><span style="color:var(--p)">₹250+</span></div>
-      <div style="margin-top:10px;font-size:11px;color:var(--ink3)">💡 Final amount may vary. You pay ONLY after work is done.</div>
+      <div class="os-row"><span>Service charge</span><span>₹200</span></div>
+      <div class="os-row"><span>Convenience fee</span><span>₹20</span></div>
+      <div class="os-row"><span>Travel (approx)</span><span>₹30</span></div>
+      <div class="os-row total"><span>Total estimate</span><span style="color:var(--p)">₹250+</span></div>
+      <p style="margin-top:10px;font-size:11px;color:var(--ink3)">💡 Pay only after work is done. Final amount may vary.</p>
     </div>
-
-    <div style="margin-top:20px">
-      <button class="btn-primary" onclick="confirmBooking()">
-        ✅ Confirm booking
-      </button>
-      <div style="text-align:center;margin-top:10px;font-size:12px;color:var(--ink3)">Payment in cash after job completion</div>
+    <div style="margin-top:18px">
+      <button class="btn btn-primary" onclick="confirmBook()">✅ Confirm booking</button>
+      <p style="text-align:center;font-size:12px;color:var(--ink3);margin-top:10px">Cash payment after job completion</p>
     </div>
   </div>
 </div>
 
-
-<!-- ════════════════ TRACKING ════════════════ -->
+<!-- ════ TRACKING ════ -->
 <div id="s-track" class="screen">
-  <div class="top-nav">
-    <button class="nav-back" onclick="go('home')">←</button>
+  <div class="nav">
+    <button class="nav-back" onclick="go('home','back')">←</button>
     <span class="nav-title">Live tracking</span>
-    <button class="nav-action" onclick="toast('📞 Calling Suresh…')">Call</button>
+    <button style="font-size:12px;font-weight:600;color:var(--p)" onclick="toast('📞 Calling Suresh Auto…')">Call</button>
   </div>
-  <div class="track-map">
-    <div class="map-placeholder">
-      <div class="map-pulse">🔧</div>
-      <div style="font-size:13px;color:var(--ink2);font-weight:500">Provider en route</div>
-      <div style="font-size:11px;color:var(--ink3);margin-top:4px">Live map · Agra</div>
+  <div class="track-map-area">
+    <div class="map-grid"></div>
+    <div class="map-center">
+      <div class="map-pin">🔧</div>
+      <div class="map-label">Provider en route · Agra</div>
     </div>
-    <!-- Route line decorations -->
-    <div style="position:absolute;bottom:20px;right:20px;width:14px;height:14px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 5px rgba(11,155,115,0.2)"></div>
+    <div style="position:absolute;bottom:18px;right:18px;width:14px;height:14px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 5px rgba(0,201,138,0.2)"></div>
   </div>
   <div class="track-body">
-    <div class="track-status">
-      <div class="track-icon">🔧</div>
+    <div class="track-status-card">
+      <div class="ts-icon">🔧</div>
       <div>
-        <div class="track-label">Provider</div>
-        <div class="track-value">Suresh Auto</div>
+        <div class="ts-label">Provider</div>
+        <div class="ts-val">Suresh Auto</div>
       </div>
-      <div class="track-eta-strip">
-        <div class="track-label">ETA</div>
-        <div class="track-value" id="etaCounter">12 min</div>
-      </div>
-    </div>
-
-    <div class="progress-steps">
-      <div class="progress-step">
-        <div class="step-line-wrap">
-          <div class="step-dot done">✓</div>
-          <div class="step-vline done"></div>
-        </div>
-        <div class="step-content">
-          <div class="step-title">Booking confirmed</div>
-          <div class="step-sub">1:42 PM · Provider accepted your request</div>
-        </div>
-      </div>
-      <div class="progress-step">
-        <div class="step-line-wrap">
-          <div class="step-dot active">→</div>
-          <div class="step-vline todo"></div>
-        </div>
-        <div class="step-content">
-          <div class="step-title">Provider on the way</div>
-          <div class="step-sub">Suresh is heading to your location</div>
-        </div>
-      </div>
-      <div class="progress-step">
-        <div class="step-line-wrap">
-          <div class="step-dot todo">3</div>
-          <div class="step-vline todo"></div>
-        </div>
-        <div class="step-content">
-          <div class="step-title">Work in progress</div>
-          <div class="step-sub">Provider starts fixing your problem</div>
-        </div>
-      </div>
-      <div class="progress-step">
-        <div class="step-line-wrap">
-          <div class="step-dot todo">4</div>
-        </div>
-        <div class="step-content">
-          <div class="step-title">Done — pay & rate</div>
-          <div class="step-sub">Pay in cash. Rate your experience.</div>
-        </div>
+      <div class="ts-eta">
+        <div class="ts-eta-lbl">ETA</div>
+        <div class="ts-eta-val" id="trackEta">12 min</div>
       </div>
     </div>
-
-    <button class="btn-primary" onclick="toast('📞 Connecting to Suresh Auto…')">📞 Call provider</button>
-    <div style="margin-top:10px"></div>
-    <button class="btn-outline" onclick="toast('❌ Cancellation request sent')">Cancel booking</button>
+    <div class="prog-list">
+      <div class="prog-step">
+        <div class="prog-left">
+          <div class="prog-dot done">✓</div>
+          <div class="prog-line done"></div>
+        </div>
+        <div class="prog-content">
+          <div class="prog-title">Booking confirmed</div>
+          <div class="prog-sub">1:42 PM · Provider accepted</div>
+        </div>
+      </div>
+      <div class="prog-step">
+        <div class="prog-left">
+          <div class="prog-dot active">→</div>
+          <div class="prog-line todo"></div>
+        </div>
+        <div class="prog-content">
+          <div class="prog-title">Provider on the way</div>
+          <div class="prog-sub">Suresh is heading to your location</div>
+        </div>
+      </div>
+      <div class="prog-step">
+        <div class="prog-left">
+          <div class="prog-dot todo">3</div>
+          <div class="prog-line todo"></div>
+        </div>
+        <div class="prog-content">
+          <div class="prog-title">Work in progress</div>
+          <div class="prog-sub">Your problem is being fixed</div>
+        </div>
+      </div>
+      <div class="prog-step">
+        <div class="prog-left">
+          <div class="prog-dot todo">4</div>
+        </div>
+        <div class="prog-content">
+          <div class="prog-title">Done — pay & rate</div>
+          <div class="prog-sub">Pay in cash. Share your rating.</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-bottom:10px" onclick="toast('📞 Connecting to Suresh Auto…')">📞 Call provider</button>
+    <button class="btn btn-outline" onclick="toast('❌ Cancellation request sent')">Cancel booking</button>
   </div>
 </div>
 
-
-<!-- ════════════════ PROVIDER APP ════════════════ -->
+<!-- ════ PROVIDER ════ -->
 <div id="s-provider" class="screen">
-  <div class="prov-header">
-    <div class="prov-top">
+  <div class="prov-hdr">
+    <div class="prov-hdr-top">
       <div>
-        <div class="prov-welcome">Provider dashboard</div>
+        <div class="prov-greet">Provider dashboard</div>
         <div class="prov-pname">Suresh Auto 🔧</div>
       </div>
-      <button class="online-toggle" onclick="toggleOnline(this)">
-        <div class="toggle-dot" id="onlineDot"></div>
-        <span id="onlineLabel">Online</span>
+      <button class="online-btn" onclick="toggleOnline(this)">
+        <div class="odot" id="odot"></div>
+        <span id="olabel">Online</span>
       </button>
     </div>
-    <div class="prov-stats-row">
-      <div class="prov-stat"><div class="prov-stat-num">₹1,240</div><div class="prov-stat-lbl">Today</div></div>
-      <div class="prov-stat"><div class="prov-stat-num">8</div><div class="prov-stat-lbl">Jobs done</div></div>
-      <div class="prov-stat"><div class="prov-stat-num">4.9 ⭐</div><div class="prov-stat-lbl">Rating</div></div>
+    <div class="prov-kpis">
+      <div class="pkpi"><div class="pkpi-n">₹1,240</div><div class="pkpi-l">Today</div></div>
+      <div class="pkpi"><div class="pkpi-n">8</div><div class="pkpi-l">Jobs done</div></div>
+      <div class="pkpi"><div class="pkpi-n">4.9 ⭐</div><div class="pkpi-l">Rating</div></div>
     </div>
   </div>
-
   <div class="prov-body">
-    <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--p);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-      <span style="width:8px;height:8px;border-radius:50%;background:var(--coral);display:inline-block;animation:pulse2 1s infinite"></span>
-      New job requests
-    </div>
-
-    <div class="job-card new">
-      <div class="jc-top">
-        <div>
-          <div class="jc-type">⚡ Battery jumpstart</div>
-          <div class="jc-meta">Rahul M. · 0.8 km away · Just now</div>
-        </div>
-        <span class="pill pill-coral">New</span>
+    <div class="new-jobs-label"><div class="new-dot"></div>New job requests</div>
+    <div class="job-card new-job">
+      <div class="jc-head">
+        <div><div class="jc-type">⚡ Battery jumpstart</div><div class="jc-meta">Rahul M. · 0.8 km · Just now</div></div>
+        <span class="pill pill-red">New</span>
       </div>
       <div class="jc-problem">"My car won't start near Taj Mahal gate 2. Need urgent help!"</div>
-      <div class="jc-actions">
-        <button class="btn-accept" onclick="acceptJob(this)">✓ Accept job</button>
+      <div class="jc-btns">
+        <button class="btn-accept" onclick="acceptJob(this)">✓ Accept</button>
         <button class="btn-decline" onclick="declineJob(this)">Decline</button>
       </div>
     </div>
-
-    <div class="job-card new">
-      <div class="jc-top">
-        <div>
-          <div class="jc-type">🛞 Tyre puncture</div>
-          <div class="jc-meta">Priya K. · 1.2 km away · 2 min ago</div>
-        </div>
-        <span class="pill pill-coral">New</span>
+    <div class="job-card new-job">
+      <div class="jc-head">
+        <div><div class="jc-type">🛞 Tyre puncture</div><div class="jc-meta">Priya K. · 1.2 km · 2 min ago</div></div>
+        <span class="pill pill-red">New</span>
       </div>
-      <div class="jc-problem">"Front left tyre punctured near Sikandra road. Please come fast."</div>
-      <div class="jc-actions">
-        <button class="btn-accept" onclick="acceptJob(this)">✓ Accept job</button>
+      <div class="jc-problem">"Front left tyre punctured on Sikandra road. Please come fast."</div>
+      <div class="jc-btns">
+        <button class="btn-accept" onclick="acceptJob(this)">✓ Accept</button>
         <button class="btn-decline" onclick="declineJob(this)">Decline</button>
       </div>
     </div>
-
-    <div style="font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--ink2);margin:16px 0 10px">Today's earnings</div>
-    <div class="earning-row">
-      <div class="earning-icon" style="background:#dff5ed">💵</div>
-      <div class="earning-desc">Oil change — Amit S.<small>10:30 AM · Tajganj</small></div>
-      <div class="earning-amt">+₹350</div>
-    </div>
-    <div class="earning-row">
-      <div class="earning-icon" style="background:#dff5ed">💵</div>
-      <div class="earning-desc">Battery jumpstart — Neha V.<small>12:15 PM · Civil Lines</small></div>
-      <div class="earning-amt">+₹250</div>
-    </div>
-    <div class="earning-row">
-      <div class="earning-icon" style="background:#dff5ed">💵</div>
-      <div class="earning-desc">Tyre change — Mohan P.<small>2:45 PM · Sadar</small></div>
-      <div class="earning-amt">+₹400</div>
-    </div>
-    <div class="earning-row">
-      <div class="earning-icon" style="background:#fcecea">💵</div>
-      <div class="earning-desc">Platform fee (10%)<small>Daily deduction</small></div>
-      <div class="earning-amt" style="color:var(--coral)">−₹124</div>
-    </div>
+    <div style="font-family:'Clash Display',sans-serif;font-size:14px;font-weight:700;color:var(--ink2);margin:16px 0 10px">Today's earnings</div>
+    <div class="earn-row"><div class="earn-icon" style="background:var(--teal-bg)">💵</div><div class="earn-desc">Oil change — Amit S.<small>10:30 AM · Tajganj</small></div><div class="earn-amt">+₹350</div></div>
+    <div class="earn-row"><div class="earn-icon" style="background:var(--teal-bg)">💵</div><div class="earn-desc">Battery jump — Neha V.<small>12:15 PM · Civil Lines</small></div><div class="earn-amt">+₹250</div></div>
+    <div class="earn-row"><div class="earn-icon" style="background:var(--teal-bg)">💵</div><div class="earn-desc">Tyre change — Mohan P.<small>2:45 PM · Sadar</small></div><div class="earn-amt">+₹400</div></div>
+    <div class="earn-row"><div class="earn-icon" style="background:var(--coral-bg)">📊</div><div class="earn-desc">Platform fee (10%)<small>Daily deduction</small></div><div class="earn-amt neg">−₹124</div></div>
   </div>
-
   <div class="tab-bar">
-    <button class="tab-item active"><span class="tab-icon">📋</span><span>Jobs</span></button>
-    <button class="tab-item" onclick="toast('💰 Earnings history')"><span class="tab-icon">💰</span><span>Earnings</span></button>
-    <button class="tab-item" onclick="toast('⭐ Your reviews')"><span class="tab-icon">⭐</span><span>Reviews</span></button>
-    <button class="tab-item" onclick="toast('👤 Profile settings')"><span class="tab-icon">👤</span><span>Profile</span></button>
+    <button class="tab-btn active"><div class="tab-icon-wrap">📋</div><span>Jobs</span></button>
+    <button class="tab-btn" onclick="toast('💰 Earnings history')"><div class="tab-icon-wrap">💰</div><span>Earnings</span></button>
+    <button class="tab-btn" onclick="toast('⭐ Your reviews')"><div class="tab-icon-wrap">⭐</div><span>Reviews</span></button>
+    <button class="tab-btn" onclick="toast('👤 Profile settings')"><div class="tab-icon-wrap">👤</div><span>Profile</span></button>
   </div>
 </div>
 
-
-<!-- ════════════════ ADMIN ════════════════ -->
+<!-- ════ ADMIN ════ -->
 <div id="s-admin" class="screen">
-  <div class="admin-header">
+  <div class="admin-hdr">
     <div style="display:flex;align-items:center;justify-content:space-between">
-      <div>
-        <div class="admin-title">Admin Panel</div>
-        <div class="admin-sub">Solution — Agra operations · Today</div>
-      </div>
-      <button onclick="go('landing')" style="background:rgba(255,255,255,0.15);border:none;color:white;padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600">← Exit</button>
+      <div><div class="admin-htitle">Admin Panel</div><div class="admin-hsub">Solution · Agra operations · Today</div></div>
+      <button onclick="go('landing','back')" style="background:rgba(255,255,255,0.15);border:none;color:#fff;padding:7px 14px;border-radius:10px;font-size:12px;font-weight:600">← Exit</button>
     </div>
   </div>
-
   <div class="admin-body">
-    <div class="admin-kpi">
-      <div class="kpi-card">
-        <div class="kpi-icon">📦</div>
-        <div class="kpi-num">142</div>
-        <div class="kpi-lbl">Orders today</div>
-        <div class="kpi-change kpi-up">↑ 18% vs yesterday</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">💰</div>
-        <div class="kpi-num">₹38.4k</div>
-        <div class="kpi-lbl">Revenue today</div>
-        <div class="kpi-change kpi-up">↑ 23% vs yesterday</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">🔧</div>
-        <div class="kpi-num">47</div>
-        <div class="kpi-lbl">Active providers</div>
-        <div class="kpi-change kpi-up">↑ 5 new today</div>
-      </div>
-      <div class="kpi-card">
-        <div class="kpi-icon">⭐</div>
-        <div class="kpi-num">4.82</div>
-        <div class="kpi-lbl">Avg. rating</div>
-        <div class="kpi-change kpi-up">↑ 0.03 this week</div>
+    <div class="kpi-grid">
+      <div class="kpi-c"><div class="kpi-icon-e">📦</div><div class="kpi-n">142</div><div class="kpi-l">Orders today</div><div class="kpi-ch kpi-up">↑ 18% vs yesterday</div></div>
+      <div class="kpi-c"><div class="kpi-icon-e">💰</div><div class="kpi-n">₹38.4k</div><div class="kpi-l">Revenue today</div><div class="kpi-ch kpi-up">↑ 23% vs yesterday</div></div>
+      <div class="kpi-c"><div class="kpi-icon-e">🔧</div><div class="kpi-n">47</div><div class="kpi-l">Active providers</div><div class="kpi-ch kpi-up">↑ 5 new today</div></div>
+      <div class="kpi-c"><div class="kpi-icon-e">⭐</div><div class="kpi-n">4.82</div><div class="kpi-l">Avg. rating</div><div class="kpi-ch kpi-up">↑ 0.03 this week</div></div>
+    </div>
+    <div class="admin-card">
+      <div class="admin-card-title">Orders by service</div>
+      <div class="bar-chart">
+        <div class="bar-row"><span class="bar-lbl">Mechanic</span><div class="bar-track"><div class="bar-fill" style="width:75%;background:var(--p)">48</div></div></div>
+        <div class="bar-row"><span class="bar-lbl">Plumber</span><div class="bar-track"><div class="bar-fill" style="width:45%;background:var(--teal)">29</div></div></div>
+        <div class="bar-row"><span class="bar-lbl">Electric</span><div class="bar-track"><div class="bar-fill" style="width:38%;background:var(--amber)">24</div></div></div>
+        <div class="bar-row"><span class="bar-lbl">Carpenter</span><div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--coral)">14</div></div></div>
+        <div class="bar-row"><span class="bar-lbl">Transport</span><div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--blue)">19</div></div></div>
       </div>
     </div>
-
-    <div class="card">
-      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:14px">Orders by service type</div>
-      <div class="chart-bar-wrap">
-        <div class="chart-row"><span class="chart-label">Mechanic</span><div class="chart-bar" style="width:75%;background:var(--p)">48</div></div>
-        <div class="chart-row"><span class="chart-label">Plumber</span><div class="chart-bar" style="width:45%;background:var(--teal)">29</div></div>
-        <div class="chart-row"><span class="chart-label">Electric</span><div class="chart-bar" style="width:38%;background:var(--amber)">24</div></div>
-        <div class="chart-row"><span class="chart-label">Carpenter</span><div class="chart-bar" style="width:22%;background:var(--coral)">14</div></div>
-        <div class="chart-row"><span class="chart-label">Transport</span><div class="chart-bar" style="width:30%;background:var(--blue)">19</div></div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px">Live orders</div>
-      <table class="admin-table">
-        <thead>
-          <tr><th>Order</th><th>Service</th><th>Provider</th><th>Status</th></tr>
-        </thead>
+    <div class="admin-card">
+      <div class="admin-card-title">Live orders</div>
+      <table class="atbl">
+        <thead><tr><th>Order</th><th>Service</th><th>Provider</th><th>Status</th></tr></thead>
         <tbody>
-          <tr><td>#1042</td><td>Mechanic</td><td>Suresh A.</td><td><span class="pill pill-teal">Active</span></td></tr>
-          <tr><td>#1041</td><td>Plumber</td><td>Deepak P.</td><td><span class="pill pill-teal">Active</span></td></tr>
+          <tr><td>#1042</td><td>Mechanic</td><td>Suresh A.</td><td><span class="pill pill-green">Active</span></td></tr>
+          <tr><td>#1041</td><td>Plumber</td><td>Deepak P.</td><td><span class="pill pill-green">Active</span></td></tr>
           <tr><td>#1040</td><td>Electric</td><td>Bijli B.</td><td><span class="pill pill-purple">En route</span></td></tr>
           <tr><td>#1039</td><td>Carpenter</td><td>Ram C.</td><td><span class="pill pill-amber">Pending</span></td></tr>
-          <tr><td>#1038</td><td>Fuel</td><td>Mohan T.</td><td><span class="pill pill-teal">Done</span></td></tr>
         </tbody>
       </table>
     </div>
-
-    <div class="card">
-      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px">Provider approvals</div>
-      <table class="admin-table">
-        <thead>
-          <tr><th>Name</th><th>Service</th><th>Area</th><th>Action</th></tr>
-        </thead>
+    <div class="admin-card">
+      <div class="admin-card-title">Provider approvals</div>
+      <table class="atbl">
+        <thead><tr><th>Name</th><th>Service</th><th>Area</th><th></th></tr></thead>
         <tbody>
-          <tr>
-            <td>Vikram S.</td><td>Mechanic</td><td>Agra Cantt</td>
-            <td><button class="btn-teal" style="font-size:11px;padding:5px 10px" onclick="toast('✅ Vikram approved!')">Approve</button></td>
-          </tr>
-          <tr>
-            <td>Anita R.</td><td>Painter</td><td>Bodla</td>
-            <td><button class="btn-teal" style="font-size:11px;padding:5px 10px" onclick="toast('✅ Anita approved!')">Approve</button></td>
-          </tr>
+          <tr><td>Vikram S.</td><td>Mechanic</td><td>Cantt</td><td><button class="btn-sm btn-teal" onclick="toast('✅ Vikram approved!')">Approve</button></td></tr>
+          <tr><td>Anita R.</td><td>Painter</td><td>Bodla</td><td><button class="btn-sm btn-teal" onclick="toast('✅ Anita approved!')">Approve</button></td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-
-<!-- ════════════════ BACKEND PLAN ════════════════ -->
+<!-- ════ BACKEND ════ -->
 <div id="s-backend" class="screen">
-  <div class="top-nav">
-    <button class="nav-back" onclick="go('landing')">←</button>
+  <div class="nav">
+    <button class="nav-back" onclick="goBack()">←</button>
     <span class="nav-title">Backend plan</span>
-    <span></span>
+    <span style="width:38px"></span>
   </div>
   <div class="backend-body">
-
-    <div class="arch-section">
+    <div class="arch-sec">
       <div class="arch-title">🏗️ Tech stack</div>
-      <div class="tech-grid">
-        <div class="tech-item"><span class="tech-emoji">⚡</span><div><div class="tech-name">Node.js + Express</div><div class="tech-role">API server</div></div></div>
-        <div class="tech-item"><span class="tech-emoji">🍃</span><div><div class="tech-name">MongoDB</div><div class="tech-role">Main database</div></div></div>
-        <div class="tech-item"><span class="tech-emoji">🔥</span><div><div class="tech-name">Firebase / Socket.io</div><div class="tech-role">Real-time updates</div></div></div>
-        <div class="tech-item"><span class="tech-emoji">📱</span><div><div class="tech-name">React Native</div><div class="tech-role">Mobile app</div></div></div>
-        <div class="tech-item"><span class="tech-emoji">🗺️</span><div><div class="tech-name">Google Maps API</div><div class="tech-role">Location & routing</div></div></div>
-        <div class="tech-item"><span class="tech-emoji">💳</span><div><div class="tech-name">Razorpay</div><div class="tech-role">UPI & card payments</div></div></div>
-        <div class="tech-item"><span class="tech-emoji">📩</span><div><div class="tech-name">Twilio / MSG91</div><div class="tech-role">SMS & OTP</div></div></div>
-        <div class="tech-item"><span class="tech-emoji">☁️</span><div><div class="tech-name">AWS / Vercel</div><div class="tech-role">Hosting & CDN</div></div></div>
+      <div class="tech-grid2">
+        <div class="titem"><span class="titem-e">⚡</span><div><div class="titem-n">Node.js + Express</div><div class="titem-r">API server</div></div></div>
+        <div class="titem"><span class="titem-e">🍃</span><div><div class="titem-n">MongoDB</div><div class="titem-r">Database</div></div></div>
+        <div class="titem"><span class="titem-e">🔥</span><div><div class="titem-n">Firebase</div><div class="titem-r">Real-time</div></div></div>
+        <div class="titem"><span class="titem-e">📱</span><div><div class="titem-n">React Native</div><div class="titem-r">Mobile app</div></div></div>
+        <div class="titem"><span class="titem-e">🗺️</span><div><div class="titem-n">Google Maps</div><div class="titem-r">Location</div></div></div>
+        <div class="titem"><span class="titem-e">💳</span><div><div class="titem-n">Razorpay</div><div class="titem-r">Payments</div></div></div>
+        <div class="titem"><span class="titem-e">📩</span><div><div class="titem-n">MSG91</div><div class="titem-r">SMS & OTP</div></div></div>
+        <div class="titem"><span class="titem-e">☁️</span><div><div class="titem-n">Supabase</div><div class="titem-r">Free backend</div></div></div>
       </div>
     </div>
-
-    <div class="arch-section">
+    <div class="arch-sec">
       <div class="arch-title">🗄️ Database models</div>
       <div class="arch-card">
-        <div class="arch-row"><div class="arch-dot" style="background:var(--p)"></div><div class="arch-key">User</div><div class="arch-val">name, phone, address, location, orderHistory, createdAt</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--teal)"></div><div class="arch-key">Provider</div><div class="arch-val">name, phone, services[], area, location, rating, totalJobs, isOnline, isApproved, earnings</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--amber)"></div><div class="arch-key">Order</div><div class="arch-val">userId, providerId, service, problem, address, status, amount, scheduledTime, completedAt</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--coral)"></div><div class="arch-key">Review</div><div class="arch-val">orderId, userId, providerId, rating, comment, createdAt</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--blue)"></div><div class="arch-key">Payment</div><div class="arch-val">orderId, method, amount, status, transactionId, paidAt</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--p)"></div><div class="arch-key">User</div><div class="arch-val">name, phone, address, location, orderHistory</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--teal)"></div><div class="arch-key">Provider</div><div class="arch-val">name, phone, services[], area, rating, isOnline, earnings</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--amber)"></div><div class="arch-key">Order</div><div class="arch-val">userId, providerId, service, status, amount, address</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--coral)"></div><div class="arch-key">Review</div><div class="arch-val">orderId, rating, comment, createdAt</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--blue)"></div><div class="arch-key">Payment</div><div class="arch-val">orderId, method, amount, status, transactionId</div></div>
       </div>
     </div>
-
-    <div class="arch-section">
+    <div class="arch-sec">
       <div class="arch-title">🔌 API endpoints</div>
-      <div class="api-endpoint"><span class="method-badge post">POST</span><span class="ep-path">/auth/send-otp</span></div>
-      <div class="api-endpoint"><span class="method-badge post">POST</span><span class="ep-path">/auth/verify-otp</span></div>
-      <div class="api-endpoint"><span class="method-badge get">GET</span><span class="ep-path">/providers/search?q=mechanic&lat=&lng=</span></div>
-      <div class="api-endpoint"><span class="method-badge get">GET</span><span class="ep-path">/providers/:id</span></div>
-      <div class="api-endpoint"><span class="method-badge post">POST</span><span class="ep-path">/orders/create</span></div>
-      <div class="api-endpoint"><span class="method-badge put">PUT</span><span class="ep-path">/orders/:id/status</span></div>
-      <div class="api-endpoint"><span class="method-badge get">GET</span><span class="ep-path">/orders/:id/track</span></div>
-      <div class="api-endpoint"><span class="method-badge post">POST</span><span class="ep-path">/reviews/create</span></div>
-      <div class="api-endpoint"><span class="method-badge get">GET</span><span class="ep-path">/provider/dashboard</span></div>
-      <div class="api-endpoint"><span class="method-badge put">PUT</span><span class="ep-path">/provider/toggle-online</span></div>
-      <div class="api-endpoint"><span class="method-badge get">GET</span><span class="ep-path">/admin/orders</span></div>
-      <div class="api-endpoint"><span class="method-badge put">PUT</span><span class="ep-path">/admin/provider/:id/approve</span></div>
+      <div class="ep"><span class="mth post">POST</span><span class="ep-path">/auth/send-otp</span></div>
+      <div class="ep"><span class="mth post">POST</span><span class="ep-path">/auth/verify-otp</span></div>
+      <div class="ep"><span class="mth get">GET</span><span class="ep-path">/providers/search?q=&lat=&lng=</span></div>
+      <div class="ep"><span class="mth get">GET</span><span class="ep-path">/providers/:id</span></div>
+      <div class="ep"><span class="mth post">POST</span><span class="ep-path">/orders/create</span></div>
+      <div class="ep"><span class="mth put">PUT</span><span class="ep-path">/orders/:id/status</span></div>
+      <div class="ep"><span class="mth get">GET</span><span class="ep-path">/orders/:id/track</span></div>
+      <div class="ep"><span class="mth post">POST</span><span class="ep-path">/reviews/create</span></div>
+      <div class="ep"><span class="mth get">GET</span><span class="ep-path">/provider/dashboard</span></div>
+      <div class="ep"><span class="mth put">PUT</span><span class="ep-path">/provider/toggle-online</span></div>
+      <div class="ep"><span class="mth get">GET</span><span class="ep-path">/admin/orders</span></div>
+      <div class="ep"><span class="mth put">PUT</span><span class="ep-path">/admin/provider/:id/approve</span></div>
     </div>
-
-    <div class="arch-section">
-      <div class="arch-title">📲 How real-time works</div>
-      <div class="arch-card">
-        <div class="arch-row"><div class="arch-dot" style="background:var(--p)"></div><div class="arch-key">Order placed</div><div class="arch-val">Socket.io broadcasts to all nearby online providers</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--teal)"></div><div class="arch-key">Provider accepts</div><div class="arch-val">User gets live notification + provider location stream starts</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--amber)"></div><div class="arch-key">Location tracking</div><div class="arch-val">Provider app sends GPS every 5 seconds → user sees live on map</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--coral)"></div><div class="arch-key">Job done</div><div class="arch-val">Provider marks complete → payment screen opens for user</div></div>
-      </div>
-    </div>
-
-    <div class="arch-section">
-      <div class="arch-title">💸 Business model</div>
-      <div class="arch-card">
-        <div class="arch-row"><div class="arch-dot" style="background:var(--teal)"></div><div class="arch-key">Commission</div><div class="arch-val">10% from every completed job (deducted automatically)</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--p)"></div><div class="arch-key">Provider plan</div><div class="arch-val">Free basic · ₹299/mo Pro (priority listing, analytics)</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--amber)"></div><div class="arch-key">Featured listing</div><div class="arch-val">Providers pay to appear at top of search results</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--blue)"></div><div class="arch-key">Future</div><div class="arch-val">Insurance add-on, corporate B2B contracts, subscription for users</div></div>
-      </div>
-    </div>
-
-    <div class="arch-section">
+    <div class="arch-sec">
       <div class="arch-title">🚀 Launch roadmap</div>
       <div class="arch-card">
-        <div class="arch-row"><div class="arch-dot" style="background:var(--teal)"></div><div class="arch-key">Week 1–2</div><div class="arch-val">Build this website, onboard 20 providers in Agra manually via WhatsApp</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--p)"></div><div class="arch-key">Week 3–4</div><div class="arch-val">Set up WhatsApp Business API for order notifications (no app needed)</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--amber)"></div><div class="arch-key">Month 2</div><div class="arch-val">Build Node.js backend + MongoDB. Launch basic provider web dashboard</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--coral)"></div><div class="arch-key">Month 3</div><div class="arch-val">React Native app for providers. Add real-time tracking via Firebase</div></div>
-        <div class="arch-row"><div class="arch-dot" style="background:var(--blue)"></div><div class="arch-key">Month 4+</div><div class="arch-val">UPI payments via Razorpay, expand to Mathura, Vrindavan, Firozabad</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--teal)"></div><div class="arch-key">Week 1–2</div><div class="arch-val">Website live, onboard 20 providers via WhatsApp in Agra</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--p)"></div><div class="arch-key">Week 3–4</div><div class="arch-val">Take first real orders, manage manually via WhatsApp groups</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--amber)"></div><div class="arch-key">Month 2</div><div class="arch-val">Supabase backend + provider dashboard live</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--coral)"></div><div class="arch-key">Month 3</div><div class="arch-val">Flutter app for providers + Firebase real-time tracking</div></div>
+        <div class="arch-row"><div class="arch-dot2" style="background:var(--blue)"></div><div class="arch-key">Month 4+</div><div class="arch-val">Razorpay UPI payments, expand to Mathura & Firozabad</div></div>
       </div>
     </div>
-
   </div>
 </div>
 
-
-<!-- ════════════════ PROFILE ════════════════ -->
+<!-- ════ PROFILE ════ -->
 <div id="s-profile" class="screen">
-  <div class="profile-header">
-    <div class="prof-avatar">AK</div>
+  <div class="prof-hdr">
+    <div class="prof-av">AK</div>
     <div class="prof-name">Ayukt Raj</div>
     <div class="prof-sub">+91 98765 43210 · Agra</div>
   </div>
-  <div class="profile-body">
-    <div class="section-label" style="margin-top:0">My orders</div>
-    <div class="card" style="cursor:pointer" onclick="go('track')">
+  <div class="prof-body">
+    <div class="sec-label" style="margin-top:0">My orders</div>
+    <div class="card" style="cursor:pointer" onclick="go('track','in')">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:22px">🔧</span>
-        <div style="flex:1">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px">Suresh Auto — Mechanic</div>
-          <div style="font-size:12px;color:var(--ink3)">Today · Battery jumpstart</div>
-        </div>
-        <span class="pill pill-teal">Active</span>
+        <div style="flex:1"><div style="font-family:'Clash Display',sans-serif;font-weight:700;font-size:14px">Suresh Auto — Mechanic</div><div style="font-size:12px;color:var(--ink3)">Today · Battery jumpstart</div></div>
+        <span class="pill pill-green">Active</span>
       </div>
     </div>
     <div class="card" style="cursor:pointer">
       <div style="display:flex;align-items:center;gap:10px">
         <span style="font-size:22px">🪠</span>
-        <div style="flex:1">
-          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px">Deepak Plumbing</div>
-          <div style="font-size:12px;color:var(--ink3)">Yesterday · Tap leak repair</div>
-        </div>
-        <span class="pill" style="background:#f0f0f0;color:var(--ink3)">Done</span>
+        <div style="flex:1"><div style="font-family:'Clash Display',sans-serif;font-weight:700;font-size:14px">Deepak Plumbing</div><div style="font-size:12px;color:var(--ink3)">Yesterday · Tap repair</div></div>
+        <span class="pill" style="background:var(--surface);color:var(--ink3)">Done</span>
       </div>
     </div>
-
-    <div class="section-label">Account</div>
-    <div class="menu-item" onclick="toast('📍 Address: 42 Fatehabad Road, Agra')">
-      <div class="menu-item-icon" style="background:var(--p-light)">📍</div>
-      <span class="menu-item-label">My address</span>
-      <span class="menu-arrow">›</span>
-    </div>
-    <div class="menu-item" onclick="toast('🔔 Notifications are on')">
-      <div class="menu-item-icon" style="background:var(--amber-light)">🔔</div>
-      <span class="menu-item-label">Notifications</span>
-      <span class="menu-arrow">›</span>
-    </div>
-    <div class="menu-item" onclick="toast('💬 WhatsApp support opened')">
-      <div class="menu-item-icon" style="background:var(--teal-light)">💬</div>
-      <span class="menu-item-label">Help & support</span>
-      <span class="menu-arrow">›</span>
-    </div>
-    <div class="menu-item" onclick="go('backend')">
-      <div class="menu-item-icon" style="background:var(--amber-light)">📐</div>
-      <span class="menu-item-label">Backend plan</span>
-      <span class="menu-arrow">›</span>
-    </div>
-    <div class="menu-item" onclick="go('landing')">
-      <div class="menu-item-icon" style="background:var(--coral-light)">🔄</div>
-      <span class="menu-item-label">Switch role / home</span>
-      <span class="menu-arrow">›</span>
-    </div>
+    <div class="sec-label">Account</div>
+    <div class="menu-item" onclick="toast('📍 42 Fatehabad Road, Agra')"><div class="mi-icon" style="background:rgba(92,59,255,0.10)">📍</div><span class="mi-label">My address</span><span class="mi-arrow">›</span></div>
+    <div class="menu-item" onclick="toast('🔔 Notifications are on')"><div class="mi-icon" style="background:var(--amber-bg)">🔔</div><span class="mi-label">Notifications</span><span class="mi-arrow">›</span></div>
+    <div class="menu-item" onclick="toast('💬 WhatsApp support')"><div class="mi-icon" style="background:var(--teal-bg)">💬</div><span class="mi-label">Help & support</span><span class="mi-arrow">›</span></div>
+    <div class="menu-item" onclick="go('backend','in')"><div class="mi-icon" style="background:var(--amber-bg)">📐</div><span class="mi-label">Backend plan</span><span class="mi-arrow">›</span></div>
+    <div class="menu-item" onclick="go('landing','back')"><div class="mi-icon" style="background:var(--coral-bg)">🔄</div><span class="mi-label">Switch role</span><span class="mi-arrow">›</span></div>
   </div>
-
   <div class="tab-bar">
-    <button class="tab-item" onclick="go('home')"><span class="tab-icon">🏠</span><span>Home</span></button>
-    <button class="tab-item" onclick="go('search')"><span class="tab-icon">🔍</span><span>Search</span></button>
-    <button class="tab-item" onclick="go('track')"><span class="tab-icon">📍</span><span>Track</span></button>
-    <button class="tab-item active"><span class="tab-icon">👤</span><span>Profile</span></button>
+    <button class="tab-btn" onclick="go('home','back')"><div class="tab-icon-wrap">🏠</div><span>Home</span></button>
+    <button class="tab-btn" onclick="go('search','in')"><div class="tab-icon-wrap">🔍</div><span>Search</span></button>
+    <button class="tab-btn" onclick="go('track','in')"><div class="tab-icon-wrap">📍</div><span>Track</span></button>
+    <button class="tab-btn active"><div class="tab-icon-wrap">👤</div><span>Profile</span></button>
   </div>
 </div>
 
+<!-- ════ BOOKING SHEET ════ -->
+<div class="overlay" id="bookOverlay">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div style="text-align:center;font-size:52px;margin-bottom:12px">✅</div>
+    <div class="sheet-title" style="text-align:center">Booking confirmed!</div>
+    <div class="sheet-sub" style="text-align:center">Suresh Auto is on the way. ETA 12 minutes. You'll get a WhatsApp update shortly.</div>
+    <div class="confirm-row">
+      <div class="cr-row"><span style="color:var(--ink3)">Order ID</span><span style="font-weight:700">#1043</span></div>
+      <div class="cr-row"><span style="color:var(--ink3)">Provider</span><span style="font-weight:700">Suresh Auto</span></div>
+      <div class="cr-row"><span style="color:var(--ink3)">Payment</span><span style="font-weight:700;color:var(--teal2)">Cash after work ✓</span></div>
+    </div>
+    <button class="btn btn-primary" onclick="closeBook()">Track live →</button>
+  </div>
+</div>
 
-<!-- ════════════════ TOAST ════════════════ -->
+<!-- TOAST -->
 <div class="toast" id="toastEl"></div>
 
-<!-- ════════════════ BOOKING CONFIRM MODAL ════════════════ -->
-<div class="modal-overlay" id="bookModal">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div style="text-align:center;margin-bottom:16px;font-size:48px">✅</div>
-    <div class="modal-title" style="text-align:center">Booking confirmed!</div>
-    <div class="modal-sub" style="text-align:center">Suresh Auto is on the way. ETA: 12 minutes. You'll get a WhatsApp notification shortly.</div>
-    <div style="background:var(--p-xlight);border-radius:var(--r-sm);padding:14px;margin-bottom:20px">
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--ink3)">Order ID</span><span style="font-weight:600">#1043</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px"><span style="color:var(--ink3)">Provider</span><span style="font-weight:600">Suresh Auto</span></div>
-      <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:var(--ink3)">Payment</span><span style="font-weight:600">Cash after work ✓</span></div>
-    </div>
-    <button class="btn-primary" onclick="closeBookModal()">Track live →</button>
-  </div>
-</div>
-
-</div><!-- end app-shell -->
+</div><!-- shell -->
 
 <script>
-// ═══ DATA ═══
-const allProviders = [
-  {init:'SA',name:'Suresh Auto',bg:'#eeebff',clr:'#4f35e0',cat:'Mechanic',area:'Tajganj',rating:'4.9',jobs:'240+',eta:'12 min',price:'₹200–500',tags:['Car repair','Battery','Tyre change'],desc:'10 yrs experience. Available 7 days. Comes to your location.'},
-  {init:'RM',name:'Ravi Motors',bg:'#dff5ed',clr:'#0b9b73',cat:'Mechanic',area:'Sadar Bazaar',rating:'4.7',jobs:'180+',eta:'18 min',price:'₹200–600',tags:['Bike repair','Engine','Oil change'],desc:'Specialises in bikes and small cars. Fast and affordable.'},
-  {init:'DP',name:'Deepak Plumbing',bg:'#dff5ed',clr:'#0b9b73',cat:'Plumber',area:'Sikandra',rating:'4.8',jobs:'310+',eta:'15 min',price:'₹150–400',tags:['Tap repair','Pipe fix','Geyser'],desc:'Expert plumber with 8 years experience. All brands.'},
-  {init:'WW',name:'Water Works',bg:'#e3effc',clr:'#1868c4',cat:'Plumber',area:'Bodla',rating:'4.6',jobs:'120+',eta:'22 min',price:'₹150–350',tags:['Drain clean','Tank fill','Leak fix'],desc:'Specialises in water tank and drainage issues.'},
-  {init:'BB',name:'Bijli Bhai',bg:'#fdf2e0',clr:'#c97a10',cat:'Electrician',area:'Shahganj',rating:'4.9',jobs:'280+',eta:'10 min',price:'₹200–600',tags:['Wiring','Switch','MCB fix'],desc:'Government certified electrician. Licensed and insured.'},
-  {init:'PF',name:'PowerFix',bg:'#eeebff',clr:'#4f35e0',cat:'Electrician',area:'Dayalbagh',rating:'4.7',jobs:'95+',eta:'20 min',price:'₹200–500',tags:['Fan repair','AC wiring','Board fix'],desc:'All electrical work including heavy appliances.'},
-  {init:'RC',name:'Ram Carpenter',bg:'#fdf2e0',clr:'#c97a10',cat:'Carpenter',area:'Civil Lines',rating:'4.8',jobs:'160+',eta:'25 min',price:'₹300–800',tags:['Furniture','Door fix','Polish'],desc:'Custom furniture and repair. Works at home or workshop.'},
-  {init:'QT',name:'Quick Transport',bg:'#e3effc',clr:'#1868c4',cat:'Transport',area:'Agra Cantt',rating:'4.5',jobs:'400+',eta:'8 min',price:'₹80–300',tags:['Pickup','Drop','Fuel delivery'],desc:'Fast pickup and drop service anywhere in Agra.'},
+/* ── DATA ── */
+const providerData = [
+  {i:'SA',n:'Suresh Auto',c:'rgba(92,59,255,0.12)',tc:'#5c3bff',cat:'Mechanic',area:'Tajganj',r:'4.9',j:'240+',e:'12 min',p:'₹200',tags:['Car repair','Battery','Tyre change','Oil change']},
+  {i:'RM',n:'Ravi Motors',c:'rgba(0,201,138,0.10)',tc:'#00a370',cat:'Mechanic',area:'Sadar Bazaar',r:'4.7',j:'180+',e:'18 min',p:'₹200',tags:['Bike repair','Engine','Oil change']},
+  {i:'DP',n:'Deepak Plumbing',c:'rgba(0,201,138,0.10)',tc:'#00a370',cat:'Plumber',area:'Sikandra',r:'4.8',j:'310+',e:'15 min',p:'₹150',tags:['Tap repair','Pipe fix','Geyser']},
+  {i:'WW',n:'Water Works',c:'rgba(37,99,235,0.10)',tc:'#2563eb',cat:'Plumber',area:'Bodla',r:'4.6',j:'120+',e:'22 min',p:'₹150',tags:['Drain clean','Tank fill','Leak fix']},
+  {i:'BB',n:'Bijli Bhai',c:'rgba(245,166,35,0.10)',tc:'#c97a10',cat:'Electrician',area:'Shahganj',r:'4.9',j:'280+',e:'10 min',p:'₹200',tags:['Wiring','Switch fix','MCB']},
+  {i:'PF',n:'PowerFix',c:'rgba(92,59,255,0.10)',tc:'#5c3bff',cat:'Electrician',area:'Dayalbagh',r:'4.7',j:'95+',e:'20 min',p:'₹200',tags:['Fan repair','AC wiring']},
+  {i:'RC',n:'Ram Carpenter',c:'rgba(245,166,35,0.10)',tc:'#c97a10',cat:'Carpenter',area:'Civil Lines',r:'4.8',j:'160+',e:'25 min',p:'₹300',tags:['Furniture','Door fix','Polish']},
+  {i:'QT',n:'Quick Transport',c:'rgba(37,99,235,0.10)',tc:'#2563eb',cat:'Transport',area:'Agra Cantt',r:'4.5',j:'400+',e:'8 min',p:'₹80',tags:['Pickup','Drop','Fuel delivery']},
 ];
 
-let currentProvider = null;
-let previousScreen = 'home';
+let prevScreen = 'landing';
+let isOnlineStatus = true;
 
-// ═══ NAVIGATION ═══
-function go(screen) {
-  const prev = document.querySelector('.screen.active');
-  if(prev) previousScreen = prev.id.replace('s-','');
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('s-'+screen).classList.add('active');
+/* ── NAVIGATION ── */
+function go(id, dir='in') {
+  const cur = document.querySelector('.screen.active');
+  if (cur) {
+    prevScreen = cur.id.replace('s-','');
+    cur.classList.remove('active','slide-in','slide-back');
+    cur.style.display = 'none';
+  }
+  const next = document.getElementById('s-'+id);
+  next.style.display = 'block';
+  void next.offsetWidth;
+  next.classList.add('active', dir==='in'?'slide-in':'slide-back');
   window.scrollTo(0,0);
 }
 
-function goBack() { go(previousScreen || 'home'); }
+function goBack() { go(prevScreen, 'back'); }
+function tabHome() { go('home','back'); }
 
-function tabHome() { go('home'); }
-
-// ═══ SEARCH ═══
-function searchFor(query) {
-  document.getElementById('searchInput').value = query;
-  filterResults(query);
-  go('search');
+/* ── SEARCH ── */
+function searchFor(q) {
+  document.getElementById('searchInput').value = q;
+  filterResults(q);
+  go('search','in');
 }
 
-function filterResults(query) {
-  const q = query.toLowerCase();
-  let filtered = allProviders;
-  if(q && q !== 'all') {
-    filtered = allProviders.filter(p =>
-      p.cat.toLowerCase().includes(q) ||
-      p.name.toLowerCase().includes(q) ||
-      p.tags.some(t=>t.toLowerCase().includes(q)) ||
-      p.area.toLowerCase().includes(q)
+function filterResults(q) {
+  const query = q.toLowerCase();
+  const filtered = !query || query==='all' ? providerData :
+    providerData.filter(p =>
+      p.cat.toLowerCase().includes(query) ||
+      p.n.toLowerCase().includes(query) ||
+      p.area.toLowerCase().includes(query) ||
+      p.tags.some(t=>t.toLowerCase().includes(query))
     );
-  }
-  renderResults(filtered, query);
+  renderResults(filtered);
 }
 
 function setFilter(btn, cat) {
-  document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('.fchip').forEach(c=>c.classList.remove('on'));
   btn.classList.add('on');
-  if(cat==='All') {renderResults(allProviders,''); return;}
-  filterResults(cat);
+  filterResults(cat==='All'?'':cat);
 }
 
-function renderResults(providers, query) {
-  const list = document.getElementById('resultsList');
-  if(!providers.length) {
-    list.innerHTML=`<div style="text-align:center;padding:40px 20px;color:var(--ink3)"><div style="font-size:40px;margin-bottom:12px">🔍</div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--ink);margin-bottom:6px">No results found</div><div style="font-size:14px">Try a different search term</div></div>`;
+function renderResults(data) {
+  const el = document.getElementById('resultsList');
+  if (!data.length) {
+    el.innerHTML=`<div style="text-align:center;padding:60px 20px;color:var(--ink3)"><div style="font-size:48px;margin-bottom:14px">🔍</div><div style="font-family:'Clash Display',sans-serif;font-size:18px;font-weight:700;color:var(--ink);margin-bottom:6px">No results</div><div style="font-size:14px">Try searching something else</div></div>`;
     return;
   }
-  list.innerHTML = providers.map((p,i)=>`
-    <div class="result-card" onclick='openProvider("${p.init}","${p.name}","${p.area}","${p.bg}","${p.clr}","${p.area}","${p.eta}","${p.price}")'>
-      <div class="rc-top">
-        <div class="rc-avatar" style="background:${p.bg};color:${p.clr}">${p.init}</div>
-        <div class="rc-info">
-          <div class="rc-name">${p.name}</div>
-          <div style="font-size:12px;color:var(--ink3);margin-top:2px">${p.area} · <span class="stars">★</span> ${p.rating} · ${p.jobs} jobs</div>
+  el.innerHTML = data.map(p=>`
+    <div class="result-card" onclick='openDetail("${p.i}","${p.n}","${p.cat} · ${p.area}","${p.tc}","${p.c}","${p.p}")'>
+      <div class="rc-row">
+        <div class="rc-av" style="background:${p.c};color:${p.tc}">${p.i}</div>
+        <div style="flex:1">
+          <div class="rc-name">${p.n}</div>
+          <div class="rc-loc">${p.area} · <span class="stars">★</span>${p.r} · ${p.j} jobs</div>
           <div class="rc-tags">
             <span class="pill pill-purple">${p.cat}</span>
-            ${p.tags.slice(0,2).map(t=>`<span class="pill" style="background:#f4f4f4;color:var(--ink3)">${t}</span>`).join('')}
+            ${p.tags.slice(0,2).map(t=>`<span class="pill" style="background:var(--surface);color:var(--ink3)">${t}</span>`).join('')}
           </div>
         </div>
       </div>
       <div class="rc-bot">
-        <div class="rc-price">Est. cost <strong>${p.price}</strong></div>
-        <span class="pill pill-teal">${p.eta}</span>
-        <button class="btn-sm">Book →</button>
+        <div class="rc-price"><small>Est. cost</small><br><strong>${p.p}+</strong></div>
+        <span class="pill pill-green">${p.e}</span>
+        <button class="btn-sm" style="background:var(--p);color:#fff">Book →</button>
       </div>
     </div>
   `).join('');
 }
+renderResults(providerData);
 
-// initialise search with all
-renderResults(allProviders, '');
-
-// ═══ PROVIDER DETAIL ═══
-function openProvider(init,name,sub,bg,clr,area,eta,price) {
-  document.getElementById('detailAvatar').textContent = init;
-  document.getElementById('detailAvatar').style.background = bg;
-  document.getElementById('detailAvatar').style.color = clr;
-  document.getElementById('detailHero').style.background = clr;
+/* ── DETAIL ── */
+function openDetail(init,name,sub,tc,bg,price) {
+  document.getElementById('detailAv').textContent = init;
+  document.getElementById('detailAv').style.background = bg;
+  document.getElementById('detailHero').style.background = tc;
   document.getElementById('detailName').textContent = name;
-  document.getElementById('detailSub').textContent = sub + ' · ' + area;
-  document.getElementById('detailPrice').textContent = price ? price.split('–')[0] : '₹200';
-  document.getElementById('bookAvatar').textContent = init;
-  document.getElementById('bookAvatar').style.background = bg;
-  document.getElementById('bookAvatar').style.color = clr;
+  document.getElementById('detailSub').textContent = sub;
+  document.getElementById('detailPrice').textContent = price;
+  document.getElementById('bookAv').textContent = init;
+  document.getElementById('bookAv').style.background = bg;
+  document.getElementById('bookAv').style.color = tc;
   document.getElementById('bookName').textContent = name;
-  go('detail');
+  go('detail','in');
 }
 
-// ═══ BOOKING ═══
-function selectSlot(el) {
-  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
-  el.classList.add('selected');
+/* ── BOOKING ── */
+function selSlot(el) {
+  document.querySelectorAll('.tslot').forEach(s=>s.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function confirmBook() {
+  document.getElementById('bookOverlay').classList.add('open');
+}
+function closeBook() {
+  document.getElementById('bookOverlay').classList.remove('open');
+  go('track','in');
 }
 
-function confirmBooking() {
-  document.getElementById('bookModal').classList.add('open');
-}
-
-function closeBookModal() {
-  document.getElementById('bookModal').classList.remove('open');
-  go('track');
-}
-
-// ═══ PROVIDER APP ═══
-let isOnline = true;
+/* ── PROVIDER ── */
 function toggleOnline(btn) {
-  isOnline = !isOnline;
-  const dot = document.getElementById('onlineDot');
-  const lbl = document.getElementById('onlineLabel');
-  dot.style.background = isOnline ? '#4ecda4' : '#888';
-  dot.style.boxShadow = isOnline ? '0 0 0 3px rgba(78,205,164,0.25)' : 'none';
-  lbl.textContent = isOnline ? 'Online' : 'Offline';
-  toast(isOnline ? '✅ You are now online — receiving jobs' : '🔴 You are now offline');
+  isOnlineStatus = !isOnlineStatus;
+  const dot = document.getElementById('odot');
+  const lbl = document.getElementById('olabel');
+  dot.style.background = isOnlineStatus?'var(--teal)':'#888';
+  dot.style.boxShadow = isOnlineStatus?'0 0 0 3px rgba(0,201,138,0.2)':'none';
+  lbl.textContent = isOnlineStatus?'Online':'Offline';
+  toast(isOnlineStatus?'✅ You are online — receiving jobs':'🔴 You are offline');
 }
-
 function acceptJob(btn) {
   const card = btn.closest('.job-card');
-  card.style.borderColor = 'var(--teal)';
-  card.style.borderWidth = '2px';
-  btn.textContent = '✓ Accepted!';
+  card.style.borderLeftColor = 'var(--teal)';
+  btn.textContent = '✓ Accepted';
   btn.style.background = 'var(--teal)';
   btn.disabled = true;
   const dec = card.querySelector('.btn-decline');
   if(dec) dec.style.display='none';
   toast('✅ Job accepted! Customer notified.');
 }
-
 function declineJob(btn) {
   const card = btn.closest('.job-card');
-  card.style.opacity = '0.4';
+  card.style.opacity = '0.35';
   card.style.pointerEvents = 'none';
-  toast('Job declined. Next request incoming…');
+  toast('Job declined.');
 }
 
-// ═══ TOAST ═══
-let toastTimer;
+/* ── TOAST ── */
+let toastT;
 function toast(msg) {
   const el = document.getElementById('toastEl');
   el.textContent = msg;
   el.classList.add('show');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>el.classList.remove('show'), 2800);
+  clearTimeout(toastT);
+  toastT = setTimeout(()=>el.classList.remove('show'), 2800);
 }
 
-// ═══ ETA COUNTDOWN ═══
-let etaMins = 12;
+/* ── ETA countdown ── */
+let etaVal = 12;
 setInterval(()=>{
-  if(etaMins > 1) etaMins--;
-  const el = document.getElementById('etaCounter');
-  if(el) el.textContent = etaMins + ' min';
-}, 15000);
+  if(etaVal>1) etaVal--;
+  ['etaMins','trackEta'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.textContent = id==='trackEta'? etaVal+' min' : etaVal;
+  });
+}, 12000);
 </script>
 </body>
 </html>
